@@ -109,7 +109,7 @@ swagger:
 
 #oss配置
 oss:
-  enabled: true
+  enabled: false
   name: qiniu
   tenant-mode: true
   endpoint: http://prt1thnw3.bkt.clouddn.com
