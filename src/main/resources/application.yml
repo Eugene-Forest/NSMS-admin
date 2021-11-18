@@ -148,9 +148,12 @@ blade:
     enabled: true
     skip-url:
       - /blade-test/**
+  # 安全框架配置
   secure:
+    # 接口放行配置
     skip-url:
       - /blade-test/**
+    # 多终端认证配置
     client:
       - client-id: sword
         path-patterns:
@@ -158,6 +161,7 @@ blade:
       - client-id: saber
         path-patterns:
           - /blade-saber/**
+  #多租户配置
   tenant:
     column: tenant_id
     tables:

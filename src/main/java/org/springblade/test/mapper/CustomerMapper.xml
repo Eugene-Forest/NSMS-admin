@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.springblade.test.mapper.CustomerMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="customerResultMap" type="org.springblade.test.entity.Customer">
+        <id column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="status" property="status"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="customer_name" property="customerName"/>
+        <result column="customer_property" property="customerProperty"/>
+        <result column="customer_phone" property="customerPhone"/>
+        <result column="customer_address" property="customerAddress"/>
+        <result column="customer_principal" property="customerPrincipal"/>
+        <result column="customer_principal_phone" property="customerPrincipalPhone"/>
+        <result column="industry" property="industry"/>
+        <result column="customer_main_business" property="customerMainBusiness"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
+
+    <select id="selectCustomerPage" resultMap="customerResultMap">
+        select * from c_b_customer where is_deleted = 0
+    </select>
+
+</mapper>
