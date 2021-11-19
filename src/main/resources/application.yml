@@ -153,6 +153,8 @@ blade:
     # 接口放行配置
     skip-url:
       - /blade-test/**
+      - /blade-desk/**
+      - /material/**
     # 多终端认证配置
     client:
       - client-id: sword
