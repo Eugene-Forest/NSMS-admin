@@ -12,10 +12,26 @@ spring:
     #  nodes: 127.0.0.1:7001,127.0.0.1:7002,127.0.0.1:7003
     #  commandTimeout: 5000
   datasource:
-    url: jdbc:mysql://localhost:3306/blade_boot_nsms_dev?useSSL=false&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&serverTimezone=GMT%2B8
-    username: root
-    password: 1244303915
+    ## local mysql datasource configuration
+#    url: jdbc:mysql://localhost:3306/blade_boot_nsms_dev?useSSL=false&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&serverTimezone=GMT%2B8
+#    username: root
+#    password: 1244303915
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+    ## remote mysql datasource configuration for dev
+    url: jdbc:mysql://101.200.190.34:3306/nsms_dev?useSSL=false&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&serverTimezone=GMT%2B8
+    username: nsms
+    password: NSMS@all3
     driver-class-name: com.mysql.cj.jdbc.Driver
+    ## remote mysql datasource configuration for test
+#    url: jdbc:mysql://101.200.190.34:3306/nsms_test?useSSL=false&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&serverTimezone=GMT%2B8
+#    username: nsms
+#    password: NSMS@all3
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+    ## remote mysql datasource configuration for master/prod
+#    url: jdbc:mysql://101.200.190.34:3306/nsms_master?useSSL=false&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&serverTimezone=GMT%2B8
+#    username: nsms
+#    password: NSMS@all3
+#    driver-class-name: com.mysql.cj.jdbc.Driver
 
 #第三方登陆
 social:
