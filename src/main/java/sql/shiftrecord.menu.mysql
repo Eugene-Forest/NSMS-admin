@@ -1,0 +1,10 @@
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1503370386920714246', 1123598815738675201, 'shiftrecord', '', 'menu', '/nsms/shiftrecord', NULL, 1, 1, 0, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1503370386920714247', '1503370386920714246', 'shiftrecord_add', '新增', 'add', '/nsms/shiftrecord/add', 'plus', 1, 2, 1, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1503370386920714248', '1503370386920714246', 'shiftrecord_edit', '修改', 'edit', '/nsms/shiftrecord/edit', 'form', 2, 2, 2, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1503370386920714249', '1503370386920714246', 'shiftrecord_delete', '删除', 'delete', '/api/nsms/shiftrecord/remove', 'delete', 3, 2, 3, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1503370386920714250', '1503370386920714246', 'shiftrecord_view', '查看', 'view', '/nsms/shiftrecord/view', 'file-text', 4, 2, 2, 1, NULL, 0);
