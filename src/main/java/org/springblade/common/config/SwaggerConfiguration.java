@@ -76,7 +76,7 @@ public class SwaggerConfiguration {
 			.paths(PathSelectors.any())
 			.build()
 			//添加网络请求的头部信息
-			.securitySchemes(Lists.<SecurityScheme>newArrayList(bladeAuth()))
+			.securitySchemes(Lists.<SecurityScheme>newArrayList(bladeAuth(),clientInfo(),bladeTenant()))
 			.extensions(openApiExtensionResolver.buildExtensions(groupName));
 	}
 
