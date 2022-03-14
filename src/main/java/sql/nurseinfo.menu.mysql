@@ -1,0 +1,10 @@
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1503361118976933895', 1123598815738675201, 'nurseinfo', '', 'menu', '/nsms/nurseinfo', NULL, 1, 1, 0, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1503361118976933896', '1503361118976933895', 'nurseinfo_add', '新增', 'add', '/nsms/nurseinfo/add', 'plus', 1, 2, 1, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1503361118976933897', '1503361118976933895', 'nurseinfo_edit', '修改', 'edit', '/nsms/nurseinfo/edit', 'form', 2, 2, 2, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1503361118976933898', '1503361118976933895', 'nurseinfo_delete', '删除', 'delete', '/api/nsms/nurseinfo/remove', 'delete', 3, 2, 3, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1503361118976933899', '1503361118976933895', 'nurseinfo_view', '查看', 'view', '/nsms/nurseinfo/view', 'file-text', 4, 2, 2, 1, NULL, 0);
