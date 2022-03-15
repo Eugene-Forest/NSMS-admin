@@ -22,6 +22,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.springblade.rewrite.FoundationEntity;
 
 /**
  * 交班记录表实体类
@@ -33,15 +34,10 @@ import io.swagger.annotations.ApiModelProperty;
 @TableName("com_shift_record")
 @EqualsAndHashCode(callSuper = true)
 @ApiModel(value = "ShiftRecord对象", description = "交班记录表")
-public class ShiftRecord extends BaseEntity {
+public class ShiftRecord extends FoundationEntity {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * id
-     */
-    @ApiModelProperty(value = "id")
-    private Long id;
     /**
      * 申请人
      */

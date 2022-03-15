@@ -20,6 +20,7 @@ import org.springblade.nsms.checkin.vo.LeaveRecordVO;
 import org.springblade.nsms.checkin.mapper.LeaveRecordMapper;
 import org.springblade.nsms.checkin.service.ILeaveRecordService;
 import org.springblade.core.mp.base.BaseServiceImpl;
+import org.springblade.rewrite.FoundationServiceImpl;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
@@ -30,11 +31,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
  * @since 2022-03-14
  */
 @Service
-public class LeaveRecordServiceImpl extends BaseServiceImpl<LeaveRecordMapper, LeaveRecord> implements ILeaveRecordService {
+public class LeaveRecordServiceImpl extends FoundationServiceImpl<LeaveRecordMapper, LeaveRecord> implements ILeaveRecordService {
 
 	@Override
 	public IPage<LeaveRecordVO> selectLeaveRecordPage(IPage<LeaveRecordVO> page, LeaveRecordVO leaveRecord) {
 		return page.setRecords(baseMapper.selectLeaveRecordPage(page, leaveRecord));
-	}
 
+
+	}
 }

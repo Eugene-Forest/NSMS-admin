@@ -19,6 +19,7 @@ import org.springblade.nsms.checkin.entity.ShiftRecord;
 import org.springblade.nsms.checkin.vo.ShiftRecordVO;
 import org.springblade.core.mp.base.BaseService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import org.springblade.rewrite.FoundationService;
 
 /**
  * 交班记录表 服务类
@@ -26,7 +27,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
  * @author Blade
  * @since 2022-03-14
  */
-public interface IShiftRecordService extends BaseService<ShiftRecord> {
+public interface IShiftRecordService extends FoundationService<ShiftRecord> {
 
 	/**
 	 * 自定义分页

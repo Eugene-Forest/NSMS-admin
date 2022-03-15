@@ -20,6 +20,7 @@ import org.springblade.nsms.checkin.vo.ShiftRecordVO;
 import org.springblade.nsms.checkin.mapper.ShiftRecordMapper;
 import org.springblade.nsms.checkin.service.IShiftRecordService;
 import org.springblade.core.mp.base.BaseServiceImpl;
+import org.springblade.rewrite.FoundationServiceImpl;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
@@ -30,7 +31,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
  * @since 2022-03-14
  */
 @Service
-public class ShiftRecordServiceImpl extends BaseServiceImpl<ShiftRecordMapper, ShiftRecord> implements IShiftRecordService {
+public class ShiftRecordServiceImpl extends FoundationServiceImpl<ShiftRecordMapper, ShiftRecord> implements IShiftRecordService {
 
 	@Override
 	public IPage<ShiftRecordVO> selectShiftRecordPage(IPage<ShiftRecordVO> page, ShiftRecordVO shiftRecord) {

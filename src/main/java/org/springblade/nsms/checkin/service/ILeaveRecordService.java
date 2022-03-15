@@ -19,6 +19,7 @@ import org.springblade.nsms.checkin.entity.LeaveRecord;
 import org.springblade.nsms.checkin.vo.LeaveRecordVO;
 import org.springblade.core.mp.base.BaseService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import org.springblade.rewrite.FoundationService;
 
 /**
  * 请假记录表 服务类
@@ -26,7 +27,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
  * @author Blade
  * @since 2022-03-14
  */
-public interface ILeaveRecordService extends BaseService<LeaveRecord> {
+public interface ILeaveRecordService extends FoundationService<LeaveRecord> {
 
 	/**
 	 * 自定义分页

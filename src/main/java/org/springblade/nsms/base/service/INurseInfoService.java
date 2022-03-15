@@ -19,6 +19,7 @@ import org.springblade.nsms.base.entity.NurseInfo;
 import org.springblade.nsms.base.vo.NurseInfoVO;
 import org.springblade.core.mp.base.BaseService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import org.springblade.rewrite.FoundationService;
 
 /**
  * 护士档案  服务类
@@ -26,7 +27,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
  * @author Blade
  * @since 2022-03-14
  */
-public interface INurseInfoService extends BaseService<NurseInfo> {
+public interface INurseInfoService extends FoundationService<NurseInfo> {
 
 	/**
 	 * 自定义分页

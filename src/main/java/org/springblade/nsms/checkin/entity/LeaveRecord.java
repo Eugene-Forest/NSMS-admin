@@ -22,6 +22,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.springblade.rewrite.FoundationEntity;
 
 /**
  * 请假记录表实体类
@@ -33,15 +34,10 @@ import io.swagger.annotations.ApiModelProperty;
 @TableName("com_leave_record")
 @EqualsAndHashCode(callSuper = true)
 @ApiModel(value = "LeaveRecord对象", description = "请假记录表")
-public class LeaveRecord extends BaseEntity {
+public class LeaveRecord extends FoundationEntity {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * id
-     */
-    @ApiModelProperty(value = "id")
-    private Long id;
     /**
      * 请假原因
      */

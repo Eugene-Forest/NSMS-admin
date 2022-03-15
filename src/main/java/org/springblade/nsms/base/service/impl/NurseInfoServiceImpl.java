@@ -20,6 +20,8 @@ import org.springblade.nsms.base.vo.NurseInfoVO;
 import org.springblade.nsms.base.mapper.NurseInfoMapper;
 import org.springblade.nsms.base.service.INurseInfoService;
 import org.springblade.core.mp.base.BaseServiceImpl;
+import org.springblade.rewrite.FoundationService;
+import org.springblade.rewrite.FoundationServiceImpl;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
@@ -30,7 +32,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
  * @since 2022-03-14
  */
 @Service
-public class NurseInfoServiceImpl extends BaseServiceImpl<NurseInfoMapper, NurseInfo> implements INurseInfoService {
+public class NurseInfoServiceImpl extends FoundationServiceImpl<NurseInfoMapper, NurseInfo> implements INurseInfoService {
 
 	@Override
 	public IPage<NurseInfoVO> selectNurseInfoPage(IPage<NurseInfoVO> page, NurseInfoVO nurseInfo) {

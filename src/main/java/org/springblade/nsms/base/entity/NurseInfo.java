@@ -22,6 +22,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.springblade.rewrite.FoundationEntity;
 
 /**
  * 护士档案 实体类
@@ -33,15 +34,10 @@ import io.swagger.annotations.ApiModelProperty;
 @TableName("com_nurse_info")
 @EqualsAndHashCode(callSuper = true)
 @ApiModel(value = "NurseInfo对象", description = "护士档案 ")
-public class NurseInfo extends BaseEntity {
+public class NurseInfo extends FoundationEntity {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * id
-     */
-    @ApiModelProperty(value = "id")
-    private Long id;
     /**
      * 姓名
      */
