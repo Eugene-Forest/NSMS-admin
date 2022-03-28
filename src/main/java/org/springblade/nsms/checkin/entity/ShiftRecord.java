@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
 import org.springblade.rewrite.FoundationEntity;
 
 /**
- * 交班记录表实体类
+ * 换班记录表实体类
  *
  * @author Blade
  * @since 2022-03-14
@@ -33,7 +33,7 @@ import org.springblade.rewrite.FoundationEntity;
 @Data
 @TableName("com_shift_record")
 @EqualsAndHashCode(callSuper = true)
-@ApiModel(value = "ShiftRecord对象", description = "交班记录表")
+@ApiModel(value = "ShiftRecord对象", description = "换班记录表")
 public class ShiftRecord extends FoundationEntity {
 
     private static final long serialVersionUID = 1L;
@@ -49,22 +49,28 @@ public class ShiftRecord extends FoundationEntity {
     @ApiModelProperty(value = "被请求人")
     private Long beRequestedSid;
     /**
-     * 交班原因
+     * 换班原因
      */
-    @ApiModelProperty(value = "交班原因")
+    @ApiModelProperty(value = "换班原因")
     private String changeResult;
     /**
-     * 交班日期
+     * 换班日期
      */
-    @ApiModelProperty(value = "交班日期")
+    @ApiModelProperty(value = "换班日期")
     private LocalDate changeDate;
     /**
-     * 交班班次
+     * 换班班次
      */
-    @ApiModelProperty(value = "交班班次")
+    @ApiModelProperty(value = "换班班次")
     private Integer changeShift;
     /**
-     * 申请状态
+     * 申请状态 。 <br>  [数值] 含义 ； <br>
+	 *
+	 * [0] 为未审核 <br>
+	 * [1] 为被申请人驳回 <br>
+	 * [2] 为本申请人同意 <br>
+	 * [3] 为护士长驳回 <br>
+	 * [4] 为护士长同意 <br>
      */
     @ApiModelProperty(value = "申请状态")
     private Integer applicationStatus;

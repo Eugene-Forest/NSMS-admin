@@ -27,6 +27,7 @@ import org.springblade.core.mp.support.Condition;
 import org.springblade.core.mp.support.Query;
 import org.springblade.core.tool.api.R;
 import org.springblade.core.tool.utils.Func;
+import org.springblade.nsms.checkin.entity.LeaveRecord;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestParam;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -37,7 +38,7 @@ import org.springblade.nsms.checkin.service.IShiftRecordService;
 import org.springblade.core.boot.ctrl.BladeController;
 
 /**
- * 交班记录表 控制器
+ * 换班记录表 控制器
  *
  * @author Blade
  * @since 2022-03-14
@@ -45,7 +46,7 @@ import org.springblade.core.boot.ctrl.BladeController;
 @RestController
 @AllArgsConstructor
 @RequestMapping("nsms/shiftrecord")
-@Api(value = "交班记录表", tags = "交班记录表接口")
+@Api(value = "换班记录表", tags = "换班记录表接口")
 public class ShiftRecordController extends BladeController {
 
 	private IShiftRecordService shiftRecordService;
@@ -62,7 +63,7 @@ public class ShiftRecordController extends BladeController {
 	}
 
 	/**
-	 * 分页 交班记录表
+	 * 分页 换班记录表
 	 */
 	@GetMapping("/list")
 	@ApiOperationSupport(order = 2)
@@ -74,7 +75,7 @@ public class ShiftRecordController extends BladeController {
 
 
 	/**
-	 * 自定义分页 交班记录表
+	 * 自定义分页 换班记录表
 	 */
 	@GetMapping("/page")
 	@ApiOperationSupport(order = 3)
@@ -85,7 +86,7 @@ public class ShiftRecordController extends BladeController {
 	}
 
 	/**
-	 * 新增 交班记录表
+	 * 新增 换班记录表
 	 */
 	@PostMapping("/save")
 	@ApiOperationSupport(order = 4)
@@ -95,7 +96,7 @@ public class ShiftRecordController extends BladeController {
 	}
 
 	/**
-	 * 修改 交班记录表
+	 * 修改 换班记录表
 	 */
 	@PostMapping("/update")
 	@ApiOperationSupport(order = 5)
@@ -105,7 +106,7 @@ public class ShiftRecordController extends BladeController {
 	}
 
 	/**
-	 * 新增或修改 交班记录表
+	 * 新增或修改 换班记录表
 	 */
 	@PostMapping("/submit")
 	@ApiOperationSupport(order = 6)
@@ -114,9 +115,9 @@ public class ShiftRecordController extends BladeController {
 		return R.status(shiftRecordService.saveOrUpdate(shiftRecord));
 	}
 
-	
+
 	/**
-	 * 删除 交班记录表
+	 * 删除 换班记录表
 	 */
 	@PostMapping("/remove")
 	@ApiOperationSupport(order = 7)
@@ -125,5 +126,47 @@ public class ShiftRecordController extends BladeController {
 		return R.status(shiftRecordService.deleteLogic(Func.toLongList(ids)));
 	}
 
-	
+	/**
+	 * 审核 换班记录表
+	 */
+	@PostMapping("/checkIn")
+	@ApiOperationSupport(order = 8)
+	@ApiOperation(value = "审核换班", notes = "传入ids")
+	public R checkIn(@Valid @RequestBody ShiftRecord shiftRecord) {
+		return R.status(shiftRecordService.checkInShiftRecord(shiftRecord));
+	}
+
+
+	/**
+	 * 反审 换班记录表
+	 */
+	@PostMapping("/recheckIn")
+	@ApiOperationSupport(order = 9)
+	@ApiOperation(value = "反审换班", notes = "传入ids")
+	public R recheckIn(@Valid @RequestBody  ShiftRecord shiftRecord) {
+		return R.status(shiftRecordService.recheckInShiftRecord(shiftRecord));
+	}
+
+
+	/**
+	 * 同意同事换班申请
+	 */
+	@PostMapping("/agreeWith")
+	@ApiOperationSupport(order = 9)
+	@ApiOperation(value = "反审换班", notes = "传入ids")
+	public R agreeWithShiftExchange(@Valid @RequestBody ShiftRecord shiftRecord){
+		return R.status(shiftRecordService.agreeWithShiftExchange(shiftRecord));
+	}
+
+
+	/**
+	 * 取消同意同事换班申请
+	 */
+	@PostMapping("/disagreeWith")
+	@ApiOperationSupport(order = 9)
+	@ApiOperation(value = "反审换班", notes = "传入ids")
+	public R disagreeWithShiftExchange(@Valid @RequestBody ShiftRecord shiftRecord){
+		return R.status(shiftRecordService.disagreeWithShiftExchange(shiftRecord));
+	}
+
 }

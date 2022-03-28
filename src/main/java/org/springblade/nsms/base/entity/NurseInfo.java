@@ -16,13 +16,15 @@
 package org.springblade.nsms.base.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import org.springblade.core.mp.base.BaseEntity;
-import java.time.LocalDate;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springblade.rewrite.FoundationEntity;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
 
 /**
  * 护士档案 实体类
@@ -56,8 +58,14 @@ public class NurseInfo extends FoundationEntity {
     /**
      * 出生年月日
      */
+	@DateTimeFormat(
+		pattern = "yyyy-MM-dd"
+	)
+	@JsonFormat(
+		pattern = "yyyy-MM-dd"
+	)
     @ApiModelProperty(value = "出生年月日")
-    private LocalDate birthday;
+    private Date birthday;
     /**
      * 手机号
      */

@@ -21,14 +21,14 @@ import lombok.EqualsAndHashCode;
 import io.swagger.annotations.ApiModel;
 
 /**
- * 交班记录表视图实体类
+ * 换班记录表视图实体类
  *
  * @author Blade
  * @since 2022-03-14
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@ApiModel(value = "ShiftRecordVO对象", description = "交班记录表")
+@ApiModel(value = "ShiftRecordVO对象", description = "换班记录表")
 public class ShiftRecordVO extends ShiftRecord {
 	private static final long serialVersionUID = 1L;
 

@@ -22,7 +22,7 @@ import org.springblade.nsms.checkin.entity.ShiftRecord;
 import org.springblade.nsms.checkin.vo.ShiftRecordVO;
 
 /**
- * 交班记录表包装类,返回视图层所需的字段
+ * 换班记录表包装类,返回视图层所需的字段
  *
  * @author Blade
  * @since 2022-03-14

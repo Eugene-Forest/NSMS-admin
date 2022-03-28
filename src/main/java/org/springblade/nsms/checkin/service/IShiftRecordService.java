@@ -22,7 +22,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springblade.rewrite.FoundationService;
 
 /**
- * 交班记录表 服务类
+ * 换班记录表 服务类
  *
  * @author Blade
  * @since 2022-03-14
@@ -37,5 +37,34 @@ public interface IShiftRecordService extends FoundationService<ShiftRecord> {
 	 * @return
 	 */
 	IPage<ShiftRecordVO> selectShiftRecordPage(IPage<ShiftRecordVO> page, ShiftRecordVO shiftRecord);
+
+	/**
+	 * 审核换班记录
+	 * @param shiftRecord 换班记录
+	 * @return
+	 */
+	boolean checkInShiftRecord(ShiftRecord shiftRecord);
+
+	/**
+	 * 反审换班记录/撤销换班记录的审核通过
+	 * @param shiftRecord 换班记录
+	 * @return
+	 */
+	boolean recheckInShiftRecord(ShiftRecord shiftRecord);
+
+
+	/**
+	 * 同意同事的换班申请
+	 * @param shiftRecord 换班申请记录
+	 * @return
+	 */
+	boolean agreeWithShiftExchange(ShiftRecord shiftRecord);
+
+	/**
+	 * 取消同意同事的换班申请
+	 * @param shiftRecord 换班申请记录
+	 * @return
+	 */
+	boolean disagreeWithShiftExchange(ShiftRecord shiftRecord);
 
 }

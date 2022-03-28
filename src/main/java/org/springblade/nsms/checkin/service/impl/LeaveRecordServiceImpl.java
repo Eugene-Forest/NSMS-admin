@@ -15,6 +15,8 @@
  */
 package org.springblade.nsms.checkin.service.impl;
 
+import org.springblade.core.secure.BladeUser;
+import org.springblade.core.secure.utils.SecureUtil;
 import org.springblade.nsms.checkin.entity.LeaveRecord;
 import org.springblade.nsms.checkin.vo.LeaveRecordVO;
 import org.springblade.nsms.checkin.mapper.LeaveRecordMapper;
@@ -38,5 +40,46 @@ public class LeaveRecordServiceImpl extends FoundationServiceImpl<LeaveRecordMap
 		return page.setRecords(baseMapper.selectLeaveRecordPage(page, leaveRecord));
 
 
+	}
+
+	/**
+	 * 审核请假记录
+	 *
+	 * @param leaveRecord 请假记录
+	 * @return
+	 */
+	@Override
+	public boolean checkInLeaveRecord(LeaveRecord leaveRecord) {
+		//step1：通过传入的请假记录从数据库中获取源数据
+		LeaveRecord originLeaveRecord = baseMapper.selectById(leaveRecord.getId());
+		//step2: 判断源数据是否已经审批
+		if (originLeaveRecord.getApprovalStatus()==2){
+			return true;
+		}else {
+			originLeaveRecord.setApprovalStatus(2);
+			originLeaveRecord.setApprovalOpinion(leaveRecord.getApprovalOpinion());
+			return baseMapper.updateById(originLeaveRecord)==1?true:false;
+		}
+	}
+
+	/**
+	 * 反审请假记录/撤销请假记录的审核通过
+	 *
+	 * @param leaveRecord 请假记录
+	 * @return
+	 */
+	@Override
+	public boolean recheckInLeaveRecord(LeaveRecord leaveRecord) {
+		//step1：通过传入的请假记录从数据库中获取源数据
+		LeaveRecord originLeaveRecord = baseMapper.selectById(leaveRecord.getId());
+		//step2: 判断源数据是否处于审核完成的状态
+		if (originLeaveRecord.getApprovalStatus()!=2){
+			//如果不处于审核状态则出错
+			throw new RuntimeException("反审失败！请确认请假记录是否处于通过状态。");
+		}else {
+			originLeaveRecord.setApprovalStatus(2);
+			originLeaveRecord.setApprovalOpinion(leaveRecord.getApprovalOpinion());
+			return baseMapper.updateById(originLeaveRecord)==1?true:false;
+		}
 	}
 }

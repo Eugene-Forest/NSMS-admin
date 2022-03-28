@@ -25,6 +25,8 @@ import javax.validation.Valid;
 
 import org.springblade.core.mp.support.Condition;
 import org.springblade.core.mp.support.Query;
+import org.springblade.core.secure.BladeUser;
+import org.springblade.core.secure.utils.SecureUtil;
 import org.springblade.core.tool.api.R;
 import org.springblade.core.tool.utils.Func;
 import org.springframework.web.bind.annotation.*;
@@ -68,8 +70,17 @@ public class LeaveRecordController extends BladeController {
 	@ApiOperationSupport(order = 2)
 	@ApiOperation(value = "分页", notes = "传入leaveRecord")
 	public R<IPage<LeaveRecordVO>> list(LeaveRecord leaveRecord, Query query) {
-		IPage<LeaveRecord> pages = leaveRecordService.page(Condition.getPage(query), Condition.getQueryWrapper(leaveRecord));
-		return R.data(LeaveRecordWrapper.build().pageVO(pages));
+		BladeUser user = SecureUtil.getUser();
+		IPage<LeaveRecord> pages;
+		if (user.getTenantId()!=null){
+			pages = leaveRecordService.page(Condition.getPage(query),
+				Condition.getQueryWrapper(leaveRecord).
+					eq("tenant_id",user.getTenantId()).
+					eq("create_dept", user.getDeptId()));
+			return R.data(LeaveRecordWrapper.build().pageVO(pages));
+		}else {
+			throw new RuntimeException("请确认此账号是否属于租户！");
+		}
 	}
 
 
@@ -114,7 +125,7 @@ public class LeaveRecordController extends BladeController {
 		return R.status(leaveRecordService.saveOrUpdate(leaveRecord));
 	}
 
-	
+
 	/**
 	 * 删除 请假记录表
 	 */
@@ -125,5 +136,24 @@ public class LeaveRecordController extends BladeController {
 		return R.status(leaveRecordService.deleteLogic(Func.toLongList(ids)));
 	}
 
-	
+	/**
+	 * 审核 请假记录表
+	 */
+	@PostMapping("/checkIn")
+	@ApiOperationSupport(order = 8)
+	@ApiOperation(value = "审核请假", notes = "传入ids")
+	public R checkIn(@Valid @RequestBody LeaveRecord leaveRecord) {
+		return R.status(leaveRecordService.checkInLeaveRecord(leaveRecord));
+	}
+
+
+	/**
+	 * 反审 请假记录表
+	 */
+	@PostMapping("/recheckIn")
+	@ApiOperationSupport(order = 9)
+	@ApiOperation(value = "反审请假", notes = "传入ids")
+	public R recheckIn(@Valid @RequestBody LeaveRecord leaveRecord) {
+		return R.status(leaveRecordService.recheckInLeaveRecord(leaveRecord));
+	}
 }

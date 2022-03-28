@@ -22,7 +22,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 
 /**
- * 交班记录表 Mapper 接口
+ * 换班记录表 Mapper 接口
  *
  * @author Blade
  * @since 2022-03-14

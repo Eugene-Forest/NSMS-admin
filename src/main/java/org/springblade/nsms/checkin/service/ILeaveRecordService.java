@@ -38,4 +38,19 @@ public interface ILeaveRecordService extends FoundationService<LeaveRecord> {
 	 */
 	IPage<LeaveRecordVO> selectLeaveRecordPage(IPage<LeaveRecordVO> page, LeaveRecordVO leaveRecord);
 
+	/**
+	 * 审核请假记录
+	 * @param leaveRecord 请假记录
+	 * @return
+	 */
+	boolean checkInLeaveRecord(LeaveRecord leaveRecord);
+
+	/**
+	 * 反审请假记录/撤销请假记录的审核通过
+	 * @param leaveRecord 请假记录
+	 * @return
+	 */
+	boolean recheckInLeaveRecord(LeaveRecord leaveRecord);
+
+
 }

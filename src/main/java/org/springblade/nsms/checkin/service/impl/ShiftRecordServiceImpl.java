@@ -15,6 +15,7 @@
  */
 package org.springblade.nsms.checkin.service.impl;
 
+import org.springblade.nsms.checkin.entity.LeaveRecord;
 import org.springblade.nsms.checkin.entity.ShiftRecord;
 import org.springblade.nsms.checkin.vo.ShiftRecordVO;
 import org.springblade.nsms.checkin.mapper.ShiftRecordMapper;
@@ -25,7 +26,7 @@ import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
 /**
- * 交班记录表 服务实现类
+ * 换班记录表 服务实现类
  *
  * @author Blade
  * @since 2022-03-14
@@ -37,5 +38,75 @@ public class ShiftRecordServiceImpl extends FoundationServiceImpl<ShiftRecordMap
 	public IPage<ShiftRecordVO> selectShiftRecordPage(IPage<ShiftRecordVO> page, ShiftRecordVO shiftRecord) {
 		return page.setRecords(baseMapper.selectShiftRecordPage(page, shiftRecord));
 	}
+
+	/**
+	 * 审核换班记录
+	 *
+	 * @param shiftRecord 换班记录
+	 * @return
+	 */
+	@Override
+	public boolean checkInShiftRecord(ShiftRecord shiftRecord) {
+		//获取源数据
+		ShiftRecord originShiftRecord=baseMapper.selectById(shiftRecord.getId());
+		//判断是否能够或需要审核
+		if (originShiftRecord.getApplicationStatus()!=0){
+			return true;
+		}else {
+			//审核的结果会有2种
+			originShiftRecord.setApplicationStatus(shiftRecord.getApplicationStatus());
+			originShiftRecord.setApprovalOpinion(shiftRecord.getApprovalOpinion());
+			return baseMapper.updateById(originShiftRecord)==1?true:false;
+		}
+	}
+
+	/**
+	 * 反审换班记录/撤销换班记录的审核通过
+	 *
+	 * @param shiftRecord 换班记录
+	 * @return
+	 */
+	@Override
+	public boolean recheckInShiftRecord(ShiftRecord shiftRecord) {
+		//todo 所有都需要确认其对应的操作的值是否为 null
+		//获取源数据
+		ShiftRecord originShiftRecord=baseMapper.selectById(shiftRecord.getId());
+		//判断是否能够或需要审核
+		if (originShiftRecord.getApplicationStatus()==0){
+			throw new RuntimeException("反审失败！请确认换班记录是否处于审核过的状态。");
+		}else {
+			// todo 需要判断普通护士和护士长的身份，以此来区别和判断反审的结果
+//			if (originShiftRecord.getApplicationStatus()>2&&身份是护士长)
+
+			//将换班记录改为未审核状态
+			originShiftRecord.setApplicationStatus(0);
+			originShiftRecord.setApprovalOpinion(shiftRecord.getApprovalOpinion());
+			return baseMapper.updateById(originShiftRecord)==1?true:false;
+		}
+	}
+
+	/**
+	 * 同意同事的换班申请
+	 *
+	 * @param shiftRecord 换班申请记录
+	 * @return
+	 */
+	@Override
+	public boolean agreeWithShiftExchange(ShiftRecord shiftRecord) {
+
+		return false;
+	}
+
+	/**
+	 * 取消同意同事的换班申请
+	 *
+	 * @param shiftRecord 换班申请记录
+	 * @return
+	 */
+	@Override
+	public boolean disagreeWithShiftExchange(ShiftRecord shiftRecord) {
+		return false;
+	}
+
 
 }

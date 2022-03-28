@@ -20,7 +20,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * 交班记录表数据传输对象实体类
+ * 换班记录表数据传输对象实体类
  *
  * @author Blade
  * @since 2022-03-14
