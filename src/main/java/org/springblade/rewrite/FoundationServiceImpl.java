@@ -3,7 +3,6 @@ package org.springblade.rewrite;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.SneakyThrows;
-import org.springblade.core.mp.base.BaseEntity;
 import org.springblade.core.secure.BladeUser;
 import org.springblade.core.secure.utils.SecureUtil;
 import org.springblade.core.tool.utils.*;
@@ -69,6 +68,7 @@ public class FoundationServiceImpl<M extends BaseMapper<T>, T extends Foundation
 	@Override
 	public boolean save(T entity) {
 		this.resolveEntity(entity);
+		//添加对主键的生成
 		return super.save(entity);
 	}
 
@@ -108,11 +108,15 @@ public class FoundationServiceImpl<M extends BaseMapper<T>, T extends Foundation
 		try {
 			BladeUser user = SecureUtil.getUser();
 			Date now = DateUtil.now();
+			//判断是更新还是添加
 			if (entity.getId() == null) {
 				if (user != null) {
 					entity.setCreateUser(user.getUserId());
-					entity.setCreateDept(Long.valueOf(user.getDeptId()));
 					entity.setUpdateUser(user.getUserId());
+					//添加判断以适应测试用的账户可能会出现的部门id为空的情况
+					if (user.getDeptId()!=null){
+						entity.setCreateDept(Long.valueOf(user.getDeptId()));
+					}
 				}
 
 				if (entity.getStatus() == null) {
@@ -126,15 +130,21 @@ public class FoundationServiceImpl<M extends BaseMapper<T>, T extends Foundation
 
 			entity.setUpdateTime(now);
 			entity.setIsDeleted(0);
-			Field field = ReflectUtil.getField(entity.getClass(), "tenantId");
-			if (ObjectUtil.isNotEmpty(field)) {
-				Method getTenantId = ClassUtil.getMethod(entity.getClass(), "getTenantId", new Class[0]);
-				String tenantId = String.valueOf(getTenantId.invoke(entity));
-				if (ObjectUtil.isEmpty(tenantId)) {
-					Method setTenantId = ClassUtil.getMethod(entity.getClass(), "setTenantId", new Class[]{String.class});
-					setTenantId.invoke(entity, null);
-				}
-			}
+
+			assert user != null;
+			entity.setTenantId(user.getTenantId());
+
+//			Field field = ReflectUtil.getField(entity.getClass(), "tenantId");
+//			if (ObjectUtil.isNotEmpty(field)) {
+//				Method getTenantId = ClassUtil.getMethod(entity.getClass(), "getTenantId");
+//				String tenantId = String.valueOf(getTenantId.invoke(entity));
+//				Method setTenantId = ClassUtil.getMethod(entity.getClass(), "setTenantId");
+//				if (ObjectUtil.isEmpty(tenantId)) {
+//					setTenantId.invoke(entity, null);
+//				}else{
+//					setTenantId.invoke(entity, tenantId);
+//				}
+//			}
 
 		} catch (Throwable var8) {
 			throw new RuntimeException("处理业务类的基础类[FoundationEntity]时出现错误");

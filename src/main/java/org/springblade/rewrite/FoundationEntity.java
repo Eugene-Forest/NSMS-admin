@@ -61,6 +61,20 @@ public class FoundationEntity implements Serializable {
 	@ApiModelProperty("是否已删除")
 	private Integer isDeleted;
 
+	/**
+	 * 租户ID
+	 */
+	@ApiModelProperty(value = "租户ID")
+	private String tenantId;
+
+	public String getTenantId() {
+		return tenantId;
+	}
+
+	public void setTenantId(String tenantId) {
+		this.tenantId = tenantId;
+	}
+
 	public Long getId() {
 		return id;
 	}
