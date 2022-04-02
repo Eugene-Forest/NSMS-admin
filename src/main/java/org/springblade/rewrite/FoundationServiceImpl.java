@@ -123,15 +123,13 @@ public class FoundationServiceImpl<M extends BaseMapper<T>, T extends Foundation
 				}
 
 				entity.setCreateTime(now);
+				entity.setIsDeleted(0);
+				assert user != null;
+				entity.setTenantId(user.getTenantId());
 			} else if (user != null) {
 				entity.setUpdateUser(user.getUserId());
+				entity.setUpdateTime(now);
 			}
-
-			entity.setUpdateTime(now);
-			entity.setIsDeleted(0);
-
-			assert user != null;
-			entity.setTenantId(user.getTenantId());
 
 //			Field field = ReflectUtil.getField(entity.getClass(), "tenantId");
 //			if (ObjectUtil.isNotEmpty(field)) {

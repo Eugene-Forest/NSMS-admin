@@ -27,11 +27,13 @@ public class FoundationEntity implements Serializable {
 		type = IdType.ASSIGN_ID
 	)
 	private Long id;
+
 	@JsonSerialize(
 		using = ToStringSerializer.class
 	)
 	@ApiModelProperty("创建人")
 	private Long createUser;
+
 	@DateTimeFormat(
 		pattern = "yyyy-MM-dd HH:mm:ss"
 	)
@@ -40,6 +42,10 @@ public class FoundationEntity implements Serializable {
 	)
 	@ApiModelProperty("创建时间")
 	private Date createTime;
+
+	@JsonSerialize(
+		using = ToStringSerializer.class
+	)
 	@ApiModelProperty("创建部门")
 	private Long createDept;
 	@JsonSerialize(
@@ -55,8 +61,10 @@ public class FoundationEntity implements Serializable {
 	)
 	@ApiModelProperty("更新时间")
 	private Date updateTime;
+
 	@ApiModelProperty("业务状态")
 	private Integer status;
+
 	@TableLogic
 	@ApiModelProperty("是否已删除")
 	private Integer isDeleted;
