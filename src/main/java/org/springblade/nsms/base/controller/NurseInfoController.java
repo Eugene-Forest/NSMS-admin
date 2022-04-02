@@ -25,6 +25,8 @@ import javax.validation.Valid;
 
 import org.springblade.core.mp.support.Condition;
 import org.springblade.core.mp.support.Query;
+import org.springblade.core.secure.BladeUser;
+import org.springblade.core.secure.utils.SecureUtil;
 import org.springblade.core.tool.api.R;
 import org.springblade.core.tool.utils.Func;
 import org.springframework.web.bind.annotation.*;
@@ -62,19 +64,29 @@ public class NurseInfoController extends BladeController {
 	}
 
 	/**
-	 * 分页 护士档案 
+	 * 分页 护士档案
 	 */
 	@GetMapping("/list")
 	@ApiOperationSupport(order = 2)
 	@ApiOperation(value = "分页", notes = "传入nurseInfo")
 	public R<IPage<NurseInfoVO>> list(NurseInfo nurseInfo, Query query) {
-		IPage<NurseInfo> pages = nurseInfoService.page(Condition.getPage(query), Condition.getQueryWrapper(nurseInfo));
-		return R.data(NurseInfoWrapper.build().pageVO(pages));
+		//todo: 针对管理员的权限进行改造
+		BladeUser user = SecureUtil.getUser();
+		IPage<NurseInfo> pages ;
+		if (user.getTenantId()!=null){
+			pages = nurseInfoService.page(Condition.getPage(query),
+				Condition.getQueryWrapper(nurseInfo).
+					eq("tenant_id",user.getTenantId()).
+					eq("create_dept", user.getDeptId()));
+			return R.data(NurseInfoWrapper.build().pageVO(pages));
+		}else {
+			throw new RuntimeException("请确认此账号是否属于租户！");
+		}
 	}
 
 
 	/**
-	 * 自定义分页 护士档案 
+	 * 自定义分页 护士档案
 	 */
 	@GetMapping("/page")
 	@ApiOperationSupport(order = 3)
@@ -85,7 +97,7 @@ public class NurseInfoController extends BladeController {
 	}
 
 	/**
-	 * 新增 护士档案 
+	 * 新增 护士档案
 	 */
 	@PostMapping("/save")
 	@ApiOperationSupport(order = 4)
@@ -95,7 +107,7 @@ public class NurseInfoController extends BladeController {
 	}
 
 	/**
-	 * 修改 护士档案 
+	 * 修改 护士档案
 	 */
 	@PostMapping("/update")
 	@ApiOperationSupport(order = 5)
@@ -105,7 +117,7 @@ public class NurseInfoController extends BladeController {
 	}
 
 	/**
-	 * 新增或修改 护士档案 
+	 * 新增或修改 护士档案
 	 */
 	@PostMapping("/submit")
 	@ApiOperationSupport(order = 6)
@@ -114,9 +126,9 @@ public class NurseInfoController extends BladeController {
 		return R.status(nurseInfoService.saveOrUpdate(nurseInfo));
 	}
 
-	
+
 	/**
-	 * 删除 护士档案 
+	 * 删除 护士档案
 	 */
 	@PostMapping("/remove")
 	@ApiOperationSupport(order = 7)
@@ -125,5 +137,5 @@ public class NurseInfoController extends BladeController {
 		return R.status(nurseInfoService.deleteLogic(Func.toLongList(ids)));
 	}
 
-	
+
 }

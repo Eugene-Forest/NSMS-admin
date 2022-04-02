@@ -17,6 +17,8 @@ package org.springblade.nsms.base.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -54,7 +56,7 @@ public class NurseInfo extends FoundationEntity {
      * 男女性别
      */
     @ApiModelProperty(value = "男女性别")
-    private String gender;
+    private Integer gender;
     /**
      * 出生年月日
      */
@@ -80,17 +82,18 @@ public class NurseInfo extends FoundationEntity {
      * 职位
      */
     @ApiModelProperty(value = "职位")
-    private Integer position;
+    private Long position;
     /**
      * 部门
      */
     @ApiModelProperty(value = "部门")
-    private Integer department;
+	@JsonSerialize(using = ToStringSerializer.class)
+    private Long department;
     /**
      * 就职状态
      */
     @ApiModelProperty(value = "就职状态")
-    private Integer workingCondition;
+    private Long workingCondition;
 
 
 }

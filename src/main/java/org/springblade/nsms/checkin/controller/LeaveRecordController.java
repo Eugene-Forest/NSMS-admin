@@ -71,6 +71,7 @@ public class LeaveRecordController extends BladeController {
 	@ApiOperation(value = "分页", notes = "传入leaveRecord")
 	public R<IPage<LeaveRecordVO>> list(LeaveRecord leaveRecord, Query query) {
 		BladeUser user = SecureUtil.getUser();
+		//todo: 需要针对管理员用户与普通用户以区别
 		IPage<LeaveRecord> pages;
 		if (user.getTenantId()!=null){
 			pages = leaveRecordService.page(Condition.getPage(query),
