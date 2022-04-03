@@ -103,7 +103,7 @@ public class LeaveRecordController extends BladeController {
 	@ApiOperationSupport(order = 4)
 	@ApiOperation(value = "新增", notes = "传入leaveRecord")
 	public R save(@Valid @RequestBody LeaveRecord leaveRecord) {
-		return R.status(leaveRecordService.save(leaveRecord));
+		return R.status(leaveRecordService.applyForLeave(leaveRecord));
 	}
 
 	/**
@@ -113,7 +113,7 @@ public class LeaveRecordController extends BladeController {
 	@ApiOperationSupport(order = 5)
 	@ApiOperation(value = "修改", notes = "传入leaveRecord")
 	public R update(@Valid @RequestBody LeaveRecord leaveRecord) {
-		return R.status(leaveRecordService.updateById(leaveRecord));
+		return R.status(leaveRecordService.updateForLeave(leaveRecord));
 	}
 
 	/**
@@ -123,7 +123,7 @@ public class LeaveRecordController extends BladeController {
 	@ApiOperationSupport(order = 6)
 	@ApiOperation(value = "新增或修改", notes = "传入leaveRecord")
 	public R submit(@Valid @RequestBody LeaveRecord leaveRecord) {
-		return R.status(leaveRecordService.saveOrUpdate(leaveRecord));
+		return R.status(leaveRecordService.applyOrUpdateForLeave(leaveRecord));
 	}
 
 

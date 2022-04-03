@@ -30,6 +30,27 @@ import org.springblade.rewrite.FoundationService;
 public interface ILeaveRecordService extends FoundationService<LeaveRecord> {
 
 	/**
+	 * 申请请假/新建一条请假记录
+	 * @param leaveRecord 请假记录
+	 * @return
+	 */
+	boolean applyForLeave(LeaveRecord leaveRecord);
+
+	/**
+	 * 更新一条请假记录
+	 * @param leaveRecord 请假记录
+	 * @return
+	 */
+	boolean updateForLeave(LeaveRecord leaveRecord);
+
+	/**
+	 * 申请或更新一条请假记录
+	 * @param leaveRecord 请假记录
+	 * @return
+	 */
+	boolean applyOrUpdateForLeave(LeaveRecord leaveRecord);
+
+	/**
 	 * 自定义分页
 	 *
 	 * @param page

@@ -39,4 +39,18 @@ public class NurseInfoServiceImpl extends FoundationServiceImpl<NurseInfoMapper,
 		return page.setRecords(baseMapper.selectNurseInfoPage(page, nurseInfo));
 	}
 
+	/**
+	 * 通过用户id获取对应的护士信息
+	 *
+	 * @param userId 用户id
+	 */
+	@Override
+	public NurseInfo getNurseInfoByUserId(String userId) {
+		if (userId==null||userId.isEmpty()){
+			return null;
+		}else {
+			return baseMapper.getNurseInfoByUserId(userId);
+		}
+	}
+
 }

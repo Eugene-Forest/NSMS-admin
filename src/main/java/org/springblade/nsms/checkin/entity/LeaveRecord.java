@@ -16,6 +16,8 @@
 package org.springblade.nsms.checkin.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import org.springblade.core.mp.base.BaseEntity;
 import java.time.LocalDate;
 import lombok.Data;
@@ -61,6 +63,9 @@ public class LeaveRecord extends FoundationEntity {
     /**
      * 申请人id
      */
+	@JsonSerialize(
+		using = ToStringSerializer.class
+	)
     @ApiModelProperty(value = "申请人id")
     private Long nurseSid;
     /**
@@ -76,6 +81,9 @@ public class LeaveRecord extends FoundationEntity {
     /**
      * 审批人
      */
+	@JsonSerialize(
+		using = ToStringSerializer.class
+	)
     @ApiModelProperty(value = "审批人")
     private Long approver;
 

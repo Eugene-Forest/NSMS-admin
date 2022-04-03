@@ -15,10 +15,11 @@
  */
 package org.springblade.nsms.base.mapper;
 
-import org.springblade.nsms.base.entity.NurseInfo;
-import org.springblade.nsms.base.vo.NurseInfoVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import org.springblade.nsms.base.entity.NurseInfo;
+import org.springblade.nsms.base.vo.NurseInfoVO;
+
 import java.util.List;
 
 /**
@@ -38,4 +39,11 @@ public interface NurseInfoMapper extends BaseMapper<NurseInfo> {
 	 */
 	List<NurseInfoVO> selectNurseInfoPage(IPage page, NurseInfoVO nurseInfo);
 
+
+	/**
+	 * 通过用户id获取对应的护士信息
+	 *
+	 * @param userId 用户id
+	 */
+	NurseInfo getNurseInfoByUserId(String userId);
 }

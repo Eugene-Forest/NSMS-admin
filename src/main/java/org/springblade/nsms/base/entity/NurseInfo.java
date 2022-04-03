@@ -94,6 +94,11 @@ public class NurseInfo extends FoundationEntity {
      */
     @ApiModelProperty(value = "就职状态")
     private Long workingCondition;
-
+	/**
+	 * 对应用户id
+	 */
+	@JsonSerialize(using = ToStringSerializer.class)
+	@ApiModelProperty(value = "对应用户id")
+	private Long userId;
 
 }

@@ -38,4 +38,9 @@ public interface INurseInfoService extends FoundationService<NurseInfo> {
 	 */
 	IPage<NurseInfoVO> selectNurseInfoPage(IPage<NurseInfoVO> page, NurseInfoVO nurseInfo);
 
+
+	/**
+	 * 通过用户id获取对应的护士信息
+	 */
+	NurseInfo getNurseInfoByUserId(String userId);
 }

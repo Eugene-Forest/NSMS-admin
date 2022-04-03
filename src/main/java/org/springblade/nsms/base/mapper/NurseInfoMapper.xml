@@ -21,11 +21,16 @@
         <result column="position" property="position"/>
         <result column="department" property="department"/>
         <result column="working_condition" property="workingCondition"/>
+        <result column="user_id" property="userId"/>
     </resultMap>
 
 
     <select id="selectNurseInfoPage" resultMap="nurseInfoResultMap">
         select * from com_nurse_info where is_deleted = 0
+    </select>
+
+    <select id="getNurseInfoByUserId" resultMap="nurseInfoResultMap">
+        select * from com_nurse_info where is_deleted = 0 and user_id = #{userId}
     </select>
 
 </mapper>
