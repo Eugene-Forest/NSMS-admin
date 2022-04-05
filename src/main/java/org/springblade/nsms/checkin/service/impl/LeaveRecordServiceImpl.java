@@ -110,10 +110,14 @@ public class LeaveRecordServiceImpl extends FoundationServiceImpl<LeaveRecordMap
 	 */
 	@Override
 	public boolean checkInLeaveRecord(LeaveRecord leaveRecord) {
+		if(leaveRecord.getApprovalStatus()>3||leaveRecord.getApprovalStatus()<0){
+			throw new RuntimeException("请确认审核状态是否准确！");
+		}
 		//step1：通过传入的请假记录从数据库中获取源数据
 		LeaveRecord originLeaveRecord = baseMapper.selectById(leaveRecord.getId());
 		//step2: 判断源数据是否已经审批
 		if (originLeaveRecord.getApprovalStatus()==0){
+			originLeaveRecord.setApprovalStatus(leaveRecord.getApprovalStatus());
 			originLeaveRecord.setApprovalOpinion(leaveRecord.getApprovalOpinion());
 			//添加审核人的信息
 			originLeaveRecord.setApprover(ServiceImplUtil.getNurseIdFromUser());
