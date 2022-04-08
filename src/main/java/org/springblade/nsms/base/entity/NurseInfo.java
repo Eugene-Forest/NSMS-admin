@@ -82,7 +82,8 @@ public class NurseInfo extends FoundationEntity {
      * 职位
      */
     @ApiModelProperty(value = "职位")
-    private Long position;
+	@JsonSerialize(using = ToStringSerializer.class)
+	private Long position;
     /**
      * 部门
      */

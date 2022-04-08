@@ -12,6 +12,7 @@
         <result column="update_time" property="updateTime"/>
         <result column="is_deleted" property="isDeleted"/>
         <result column="status" property="status"/>
+        <result column="tenant_id" property="tenantId"/>
         <result column="leave_result" property="leaveResult"/>
         <result column="leave_date" property="leaveDate"/>
         <result column="leave_shift" property="leaveShift"/>

@@ -12,6 +12,7 @@
         <result column="update_time" property="updateTime"/>
         <result column="is_deleted" property="isDeleted"/>
         <result column="status" property="status"/>
+        <result column="tenant_id" property="tenantId"/>
         <result column="applicant_sid" property="applicantSid"/>
         <result column="be_requested_sid" property="beRequestedSid"/>
         <result column="change_result" property="changeResult"/>

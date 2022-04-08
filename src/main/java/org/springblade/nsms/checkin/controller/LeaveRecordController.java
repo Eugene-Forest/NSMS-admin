@@ -71,7 +71,11 @@ public class LeaveRecordController extends BladeController {
 	@ApiOperation(value = "分页", notes = "传入leaveRecord")
 	public R<IPage<LeaveRecordVO>> list(LeaveRecord leaveRecord, Query query) {
 		BladeUser user = SecureUtil.getUser();
-		//todo: 需要针对管理员用户与普通用户以区别
+		//todo: 需要针对管理员用户与普通用户以区别,同时针对不同角色的用户有不同的筛选条件(即：数据权限功能)
+		//对于根管理员有所有的数据查看权限，对于医院管理员有对应医院的所有数据的查看权限
+		//对于用户，若是科室护士长则有对应科室的所有数据的查看权限，对于护士或助手则只有其对应或相关的数据的查看权限
+		//对于适应后期添加用户角色以适应数据权限的查看机制的设计！！
+
 		IPage<LeaveRecord> pages;
 		if (user.getTenantId()!=null){
 			pages = leaveRecordService.page(Condition.getPage(query),
@@ -88,13 +92,13 @@ public class LeaveRecordController extends BladeController {
 	/**
 	 * 自定义分页 请假记录表
 	 */
-	@GetMapping("/page")
-	@ApiOperationSupport(order = 3)
-	@ApiOperation(value = "分页", notes = "传入leaveRecord")
-	public R<IPage<LeaveRecordVO>> page(LeaveRecordVO leaveRecord, Query query) {
-		IPage<LeaveRecordVO> pages = leaveRecordService.selectLeaveRecordPage(Condition.getPage(query), leaveRecord);
-		return R.data(pages);
-	}
+//	@GetMapping("/page")
+//	@ApiOperationSupport(order = 3)
+//	@ApiOperation(value = "分页", notes = "传入leaveRecord")
+//	public R<IPage<LeaveRecordVO>> page(LeaveRecordVO leaveRecord, Query query) {
+//		IPage<LeaveRecordVO> pages = leaveRecordService.selectLeaveRecordPage(Condition.getPage(query), leaveRecord);
+//		return R.data(pages);
+//	}
 
 	/**
 	 * 新增 请假记录表

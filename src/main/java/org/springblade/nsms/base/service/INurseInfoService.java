@@ -21,6 +21,8 @@ import org.springblade.core.mp.base.BaseService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springblade.rewrite.FoundationService;
 
+import java.util.List;
+
 /**
  * 护士档案  服务类
  *
@@ -43,4 +45,16 @@ public interface INurseInfoService extends FoundationService<NurseInfo> {
 	 * 通过用户id获取对应的护士信息
 	 */
 	NurseInfo getNurseInfoByUserId(String userId);
+
+	/**
+	 * 获取同部门的同事的信息--id--name
+	 * @return
+	 */
+	List<NurseInfo> selectCoWorkerFromSameDept();
+
+	/**
+	 * 获取同部门的护士长的信息--id--name
+	 * @return
+	 */
+	List<NurseInfo> selectHeadNurseFromSameDept();
 }

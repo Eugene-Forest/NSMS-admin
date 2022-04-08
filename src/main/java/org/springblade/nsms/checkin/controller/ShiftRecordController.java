@@ -151,22 +151,22 @@ public class ShiftRecordController extends BladeController {
 	/**
 	 * 同意同事换班申请
 	 */
-	@PostMapping("/agreeWith")
+	@PostMapping("/confer")
 	@ApiOperationSupport(order = 9)
-	@ApiOperation(value = "反审换班", notes = "传入ids")
+	@ApiOperation(value = "商议同意换班", notes = "传入ids")
 	public R agreeWithShiftExchange(@Valid @RequestBody ShiftRecord shiftRecord){
-		return R.status(shiftRecordService.agreeWithShiftExchange(shiftRecord));
+		return R.status(shiftRecordService.conferShiftExchange(shiftRecord));
 	}
 
 
 	/**
 	 * 取消同意同事换班申请
 	 */
-	@PostMapping("/disagreeWith")
+	@PostMapping("/reConfer")
 	@ApiOperationSupport(order = 9)
-	@ApiOperation(value = "反审换班", notes = "传入ids")
+	@ApiOperation(value = "撤销商议换班", notes = "传入ids")
 	public R disagreeWithShiftExchange(@Valid @RequestBody ShiftRecord shiftRecord){
-		return R.status(shiftRecordService.disagreeWithShiftExchange(shiftRecord));
+		return R.status(shiftRecordService.reConferShiftExchange(shiftRecord));
 	}
 
 }

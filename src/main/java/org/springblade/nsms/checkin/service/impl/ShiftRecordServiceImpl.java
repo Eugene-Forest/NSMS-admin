@@ -47,16 +47,20 @@ public class ShiftRecordServiceImpl extends FoundationServiceImpl<ShiftRecordMap
 	 */
 	@Override
 	public boolean checkInShiftRecord(ShiftRecord shiftRecord) {
+		//验证传入的实体是否符合规范
+		verifyEntity(shiftRecord);
+		if (shiftRecord.getApplicationStatus()<=0||shiftRecord.getApplicationStatus()>3) {
+			throw new RuntimeException("请确认提交的审核状态是否正确！");
+		}
 		//获取源数据
 		ShiftRecord originShiftRecord=baseMapper.selectById(shiftRecord.getId());
 		//判断是否能够或需要审核
-		if (originShiftRecord.getApplicationStatus()!=0){
-			return true;
-		}else {
-			//审核的结果会有2种
+		if (originShiftRecord.getApplicationStatus()>0&&originShiftRecord.getApplicationStatus()<=3){
 			originShiftRecord.setApplicationStatus(shiftRecord.getApplicationStatus());
 			originShiftRecord.setApprovalOpinion(shiftRecord.getApprovalOpinion());
 			return baseMapper.updateById(originShiftRecord)==1?true:false;
+		}else {
+			throw new RuntimeException("审核失败！请确认换班记录的状态。");
 		}
 	}
 
@@ -68,44 +72,77 @@ public class ShiftRecordServiceImpl extends FoundationServiceImpl<ShiftRecordMap
 	 */
 	@Override
 	public boolean recheckInShiftRecord(ShiftRecord shiftRecord) {
-		//todo 所有都需要确认其对应的操作的值是否为 null
+		//验证传入的实体是否符合规范
+		verifyEntity(shiftRecord);
+		if (shiftRecord.getApplicationStatus()<=3||shiftRecord.getApplicationStatus()>5) {
+			throw new RuntimeException("请确认提交的审核状态是否正确！");
+		}
 		//获取源数据
 		ShiftRecord originShiftRecord=baseMapper.selectById(shiftRecord.getId());
 		//判断是否能够或需要审核
-		if (originShiftRecord.getApplicationStatus()==0){
-			throw new RuntimeException("反审失败！请确认换班记录是否处于审核过的状态。");
-		}else {
-			// todo 需要判断普通护士和护士长的身份，以此来区别和判断反审的结果
-//			if (originShiftRecord.getApplicationStatus()>2&&身份是护士长)
-
+		if (originShiftRecord.getApplicationStatus()>3&&originShiftRecord.getApplicationStatus()<=5){
 			//将换班记录改为未审核状态
-			originShiftRecord.setApplicationStatus(0);
+			//能过被护士长审核的换班都是被同意的
+			originShiftRecord.setApplicationStatus(2);
 			originShiftRecord.setApprovalOpinion(shiftRecord.getApprovalOpinion());
 			return baseMapper.updateById(originShiftRecord)==1?true:false;
+		}else {
+			throw new RuntimeException("反审失败！请确认换班记录是否处于审核过的状态。");
 		}
 	}
 
 	/**
-	 * 同意同事的换班申请
+	 * 审核同事的换班申请
 	 *
 	 * @param shiftRecord 换班申请记录
 	 * @return
 	 */
 	@Override
-	public boolean agreeWithShiftExchange(ShiftRecord shiftRecord) {
-
-		return false;
+	public boolean conferShiftExchange(ShiftRecord shiftRecord) {
+		//验证传入的实体是否符合规范
+		verifyEntity(shiftRecord);
+		if (shiftRecord.getApplicationStatus()<=0||shiftRecord.getApplicationStatus()>=3) {
+			throw new RuntimeException("请确认提交的审核状态是否正确！");
+		}
+		//获取源数据
+		ShiftRecord originShiftRecord=baseMapper.selectById(shiftRecord.getId());
+		if (originShiftRecord.getApplicationStatus()==0){
+			originShiftRecord.setApplicationStatus(shiftRecord.getApplicationStatus());
+			return baseMapper.updateById(originShiftRecord)==1?true:false;
+		}else {
+			throw new RuntimeException("审核商议失败！请确认换班记录的状态。");
+		}
 	}
 
 	/**
-	 * 取消同意同事的换班申请
+	 * 反审同事的换班申请
 	 *
 	 * @param shiftRecord 换班申请记录
 	 * @return
 	 */
 	@Override
-	public boolean disagreeWithShiftExchange(ShiftRecord shiftRecord) {
-		return false;
+	public boolean reConferShiftExchange(ShiftRecord shiftRecord) {
+		//验证传入的实体是否符合规范
+		verifyEntity(shiftRecord);
+		if (shiftRecord.getApplicationStatus()==0) {
+			throw new RuntimeException("请确认提交的审核状态是否正确！");
+		}
+		//获取源数据
+		ShiftRecord originShiftRecord=baseMapper.selectById(shiftRecord.getId());
+		if (originShiftRecord.getApplicationStatus()==0){
+			throw new RuntimeException("反审商议失败！请确认换班记录的状态。");
+		}else {
+			originShiftRecord.setApplicationStatus(0);
+			return baseMapper.updateById(originShiftRecord)==1?true:false;
+		}
+	}
+
+
+	private boolean verifyEntity(ShiftRecord shiftRecord){
+		if (shiftRecord==null||shiftRecord.getId()==null||shiftRecord.getApplicationStatus()==null){
+			throw new RuntimeException("请确认提交的数据是否正确！");
+		}
+		return true;
 	}
 
 

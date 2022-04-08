@@ -38,6 +38,8 @@ import org.springblade.nsms.base.wrapper.NurseInfoWrapper;
 import org.springblade.nsms.base.service.INurseInfoService;
 import org.springblade.core.boot.ctrl.BladeController;
 
+import java.util.List;
+
 /**
  * 护士档案  控制器
  *
@@ -135,6 +137,22 @@ public class NurseInfoController extends BladeController {
 	@ApiOperation(value = "逻辑删除", notes = "传入ids")
 	public R remove(@ApiParam(value = "主键集合", required = true) @RequestParam String ids) {
 		return R.status(nurseInfoService.deleteLogic(Func.toLongList(ids)));
+	}
+
+
+	@GetMapping("/selectCoWorker")
+	@ApiOperationSupport(order = 8)
+	@ApiOperation(value = "同部门同事下拉列表")
+	public R  selectCoWorkerFromSameDept(){
+		return R.data(nurseInfoService.selectCoWorkerFromSameDept());
+	}
+
+
+	@GetMapping("/selectHeadNurse")
+	@ApiOperationSupport(order = 9)
+	@ApiOperation(value = "同部门护士长下拉列表")
+	public R  selectHeadNurseFromSameDept(){
+		return R.data(nurseInfoService.selectHeadNurseFromSameDept());
 	}
 
 

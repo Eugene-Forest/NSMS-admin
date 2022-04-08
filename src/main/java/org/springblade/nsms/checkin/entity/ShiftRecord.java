@@ -16,6 +16,8 @@
 package org.springblade.nsms.checkin.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import org.springblade.core.mp.base.BaseEntity;
 import java.time.LocalDate;
 import lombok.Data;
@@ -42,11 +44,17 @@ public class ShiftRecord extends FoundationEntity {
      * 申请人
      */
     @ApiModelProperty(value = "申请人")
+	@JsonSerialize(
+		using = ToStringSerializer.class
+	)
     private Long applicantSid;
     /**
      * 被请求人
      */
     @ApiModelProperty(value = "被请求人")
+	@JsonSerialize(
+		using = ToStringSerializer.class
+	)
     private Long beRequestedSid;
     /**
      * 换班原因
@@ -66,11 +74,12 @@ public class ShiftRecord extends FoundationEntity {
     /**
      * 申请状态 。 <br>  [数值] 含义 ； <br>
 	 *
-	 * [0] 为未审核 <br>
+	 * [0] 为未商议 <br>
 	 * [1] 为被申请人驳回 <br>
 	 * [2] 为本申请人同意 <br>
-	 * [3] 为护士长驳回 <br>
-	 * [4] 为护士长同意 <br>
+	 *
+	 * [4] 为护士长驳回 <br>
+	 * [5] 为护士长同意 <br>
      */
     @ApiModelProperty(value = "申请状态")
     private Integer applicationStatus;
@@ -83,6 +92,9 @@ public class ShiftRecord extends FoundationEntity {
      * 审批人id
      */
     @ApiModelProperty(value = "审批人id")
+	@JsonSerialize(
+		using = ToStringSerializer.class
+	)
     private Long approver;
 
 

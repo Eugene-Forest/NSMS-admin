@@ -15,15 +15,17 @@
  */
 package org.springblade.nsms.base.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import org.springblade.common.tool.ServiceImplUtil;
 import org.springblade.nsms.base.entity.NurseInfo;
-import org.springblade.nsms.base.vo.NurseInfoVO;
 import org.springblade.nsms.base.mapper.NurseInfoMapper;
 import org.springblade.nsms.base.service.INurseInfoService;
-import org.springblade.core.mp.base.BaseServiceImpl;
-import org.springblade.rewrite.FoundationService;
+import org.springblade.nsms.base.vo.NurseInfoVO;
 import org.springblade.rewrite.FoundationServiceImpl;
 import org.springframework.stereotype.Service;
-import com.baomidou.mybatisplus.core.metadata.IPage;
+
+import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 护士档案  服务实现类
@@ -33,6 +35,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
  */
 @Service
 public class NurseInfoServiceImpl extends FoundationServiceImpl<NurseInfoMapper, NurseInfo> implements INurseInfoService {
+
+	@Resource
+	private NurseInfoMapper nurseInfoMapper;
 
 	@Override
 	public IPage<NurseInfoVO> selectNurseInfoPage(IPage<NurseInfoVO> page, NurseInfoVO nurseInfo) {
@@ -51,6 +56,30 @@ public class NurseInfoServiceImpl extends FoundationServiceImpl<NurseInfoMapper,
 		}else {
 			return baseMapper.getNurseInfoByUserId(userId);
 		}
+	}
+
+	/**
+	 * 获取同部门的同事的信息--id--name
+	 *
+	 * @return
+	 */
+	@Override
+	public List<NurseInfo> selectCoWorkerFromSameDept() {
+		//获取此用户的信息
+		NurseInfo nurseInfo=ServiceImplUtil.getNurseInfoFromUser();
+		return nurseInfoMapper.selectCoWorkerFromSameDept(nurseInfo.getDepartment(), nurseInfo.getTenantId(),nurseInfo.getId());
+	}
+
+	/**
+	 * 获取同部门的护士长的信息--id--name
+	 *
+	 * @return
+	 */
+	@Override
+	public List<NurseInfo> selectHeadNurseFromSameDept() {
+		//获取此用户的信息
+		NurseInfo nurseInfo=ServiceImplUtil.getNurseInfoFromUser();
+		return nurseInfoMapper.selectHeadNurseFromSameDept(nurseInfo.getDepartment(), nurseInfo.getTenantId(),nurseInfo.getId());
 	}
 
 }

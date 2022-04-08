@@ -54,17 +54,17 @@ public interface IShiftRecordService extends FoundationService<ShiftRecord> {
 
 
 	/**
-	 * 同意同事的换班申请
+	 * 审核同事的换班申请
 	 * @param shiftRecord 换班申请记录
 	 * @return
 	 */
-	boolean agreeWithShiftExchange(ShiftRecord shiftRecord);
+	boolean conferShiftExchange(ShiftRecord shiftRecord);
 
 	/**
-	 * 取消同意同事的换班申请
+	 * 反审同事的换班申请
 	 * @param shiftRecord 换班申请记录
 	 * @return
 	 */
-	boolean disagreeWithShiftExchange(ShiftRecord shiftRecord);
+	boolean reConferShiftExchange(ShiftRecord shiftRecord);
 
 }
