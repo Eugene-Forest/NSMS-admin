@@ -43,7 +43,10 @@
             (select * from blade_post
                 where is_deleted=0 and tenant_id=#{tenantId}) as B
         on A.position = B.id
-        WHERE B.category > 11 and A.id != #{myId}
+        WHERE B.category > 11
+        <if test="myId!=null">
+            and A.id != #{myId}
+        </if>
     </select>
 
     <select id="selectHeadNurseFromSameDept" resultMap="nurseInfoResultMap">
@@ -54,6 +57,9 @@
             (select * from blade_post
              where is_deleted=0 and tenant_id=#{tenantId}) as B
             on A.position = B.id
-        WHERE B.category = 11 and A.id != #{myId}
+        WHERE B.category = 11
+        <if test="myId!=null">
+            and A.id != #{myId}
+        </if>
     </select>
 </mapper>

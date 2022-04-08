@@ -82,4 +82,28 @@ public class NurseInfoServiceImpl extends FoundationServiceImpl<NurseInfoMapper,
 		return nurseInfoMapper.selectHeadNurseFromSameDept(nurseInfo.getDepartment(), nurseInfo.getTenantId(),nurseInfo.getId());
 	}
 
+	/**
+	 * 获取同部门的护士助手的信息--id--name
+	 *
+	 * @return
+	 */
+	@Override
+	public List<NurseInfo> selectNursesFromSameDept() {
+		//获取此用户的信息
+		NurseInfo nurseInfo=ServiceImplUtil.getNurseInfoFromUser();
+		return nurseInfoMapper.selectCoWorkerFromSameDept(nurseInfo.getDepartment(), nurseInfo.getTenantId(), null);
+	}
+
+	/**
+	 * 获取同部门的护士长的信息--id--name
+	 *
+	 * @return
+	 */
+	@Override
+	public List<NurseInfo> selectHeadNursesFromSameDept() {
+		//获取此用户的信息
+		NurseInfo nurseInfo=ServiceImplUtil.getNurseInfoFromUser();
+		return nurseInfoMapper.selectHeadNurseFromSameDept(nurseInfo.getDepartment(), nurseInfo.getTenantId(), null);
+	}
+
 }

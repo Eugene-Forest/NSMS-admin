@@ -57,4 +57,17 @@ public interface INurseInfoService extends FoundationService<NurseInfo> {
 	 * @return
 	 */
 	List<NurseInfo> selectHeadNurseFromSameDept();
+
+	/**
+	 * 获取同部门的护士助手的信息--id--name
+	 * @return
+	 */
+	List<NurseInfo> selectNursesFromSameDept();
+
+	/**
+	 * 获取同部门的护士长的信息--id--name
+	 * @return
+	 */
+	List<NurseInfo> selectHeadNursesFromSameDept();
+
 }

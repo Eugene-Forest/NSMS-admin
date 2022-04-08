@@ -17,6 +17,7 @@ package org.springblade.nsms.base.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.sun.istack.NotNull;
 import org.mapstruct.Mapper;
 import org.springblade.nsms.base.entity.NurseInfo;
 import org.springblade.nsms.base.vo.NurseInfoVO;
@@ -47,17 +48,18 @@ public interface NurseInfoMapper extends BaseMapper<NurseInfo> {
 	 *
 	 * @param userId 用户id
 	 */
-	NurseInfo getNurseInfoByUserId(String userId);
+	NurseInfo getNurseInfoByUserId(@NotNull String userId);
+
 
 	/**
 	 * 获取同部门的同事的信息--id--name
 	 * @return
 	 */
-	List<NurseInfo> selectCoWorkerFromSameDept(Long deptId, String tenantId,Long myId);
+	List<NurseInfo> selectCoWorkerFromSameDept(@NotNull Long deptId,@NotNull String tenantId, Long myId);
 
 	/**
 	 * 获取同部门的护士长的信息--id--name
 	 * @return
 	 */
-	List<NurseInfo> selectHeadNurseFromSameDept(Long deptId, String tenantId,Long myId);
+	List<NurseInfo> selectHeadNurseFromSameDept(@NotNull Long deptId,@NotNull String tenantId,Long myId);
 }
