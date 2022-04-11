@@ -5,8 +5,8 @@ import org.springblade.core.secure.BladeUser;
 import org.springblade.core.secure.utils.SecureUtil;
 import org.springblade.core.tool.utils.DateUtil;
 import org.springblade.core.tool.utils.Func;
-import org.springblade.nsms.base.entity.NurseInfo;
-import org.springblade.nsms.base.service.INurseInfoService;
+import org.springblade.nsms.entity.NurseInfo;
+import org.springblade.nsms.service.INurseInfoService;
 import org.springblade.rewrite.FoundationEntity;
 
 import java.util.Date;

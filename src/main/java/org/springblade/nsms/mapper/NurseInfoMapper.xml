@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.springblade.nsms.mapper.NurseInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="nurseInfoResultMap" type="org.springblade.nsms.entity.NurseInfo">
+        <id column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="status" property="status"/>
+        <result column="tenant_id" property="tenantId"/>
+        <result column="name" property="name"/>
+        <result column="age" property="age"/>
+        <result column="gender" property="gender"/>
+        <result column="birthday" property="birthday"/>
+        <result column="telephone" property="telephone"/>
+        <result column="w_no" property="wNo"/>
+        <result column="position" property="position"/>
+        <result column="department" property="department"/>
+        <result column="working_condition" property="workingCondition"/>
+        <result column="user_id" property="userId"/>
+    </resultMap>
+
+
+    <select id="selectNurseInfoPage" resultMap="nurseInfoResultMap">
+        select * from com_nurse_info where is_deleted = 0
+    </select>
+
+    <select id="getNurseInfoByUserId" resultMap="nurseInfoResultMap">
+        select * from com_nurse_info where is_deleted = 0 and user_id = #{userId}
+    </select>
+
+
+    <select id="selectCoWorkerFromSameDept" resultMap="nurseInfoResultMap">
+        SELECT A.id,A.name from
+            (select * from com_nurse_info
+                where is_deleted=0 and tenant_id=#{tenantId} and create_dept=#{deptId} and working_condition=1) as A
+            LEFT JOIN
+            (select * from blade_post
+                where is_deleted=0 and tenant_id=#{tenantId}) as B
+        on A.position = B.id
+        WHERE B.category > 11
+        <if test="myId!=null">
+            and A.id != #{myId}
+        </if>
+    </select>
+
+    <select id="selectHeadNurseFromSameDept" resultMap="nurseInfoResultMap">
+        SELECT A.id,A.name from
+            (select * from com_nurse_info
+             where is_deleted=0 and tenant_id=#{tenantId} and create_dept=#{deptId} and working_condition=1) as A
+                LEFT JOIN
+            (select * from blade_post
+             where is_deleted=0 and tenant_id=#{tenantId}) as B
+            on A.position = B.id
+        WHERE B.category = 11
+        <if test="myId!=null">
+            and A.id != #{myId}
+        </if>
+    </select>
+</mapper>
