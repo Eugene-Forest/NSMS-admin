@@ -1,0 +1,10 @@
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1513533935900254215', 1123598815738675201, 'clockinconfig', '', 'menu', '/nsms/clockinconfig', NULL, 1, 1, 0, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1513533935900254216', '1513533935900254215', 'clockinconfig_add', '新增', 'add', '/nsms/clockinconfig/add', 'plus', 1, 2, 1, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1513533935900254217', '1513533935900254215', 'clockinconfig_edit', '修改', 'edit', '/nsms/clockinconfig/edit', 'form', 2, 2, 2, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1513533935900254218', '1513533935900254215', 'clockinconfig_delete', '删除', 'delete', '/api/nsms/clockinconfig/remove', 'delete', 3, 2, 3, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1513533935900254219', '1513533935900254215', 'clockinconfig_view', '查看', 'view', '/nsms/clockinconfig/view', 'file-text', 4, 2, 2, 1, NULL, 0);

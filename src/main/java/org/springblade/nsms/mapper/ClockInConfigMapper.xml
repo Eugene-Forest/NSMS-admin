@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.springblade.nsms.mapper.ClockInConfigMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="clockInConfigResultMap" type="org.springblade.nsms.entity.ClockInConfig">
+        <id column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="status" property="status"/>
+        <result column="dept_id" property="deptId"/>
+        <result column="mac_address" property="macAddress"/>
+        <result column="gps_address" property="gpsAddress"/>
+        <result column="state" property="state"/>
+        <result column="message" property="message"/>
+        <result column="clock_in_date" property="clockInDate"/>
+    </resultMap>
+
+
+    <select id="selectClockInConfigPage" resultMap="clockInConfigResultMap">
+        select * from com_clock_in_config where is_deleted = 0
+    </select>
+
+</mapper>
