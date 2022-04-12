@@ -15,7 +15,7 @@
  */
 package org.springblade.nsms.service.impl;
 
-import org.springblade.common.tool.ServiceImplUtil;
+import org.springblade.nsms.tools.ServiceImplUtil;
 import org.springblade.common.tool.SpringBeanUtil;
 import org.springblade.core.secure.BladeUser;
 import org.springblade.core.secure.utils.SecureUtil;

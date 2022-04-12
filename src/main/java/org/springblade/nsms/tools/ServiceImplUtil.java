@@ -1,6 +1,7 @@
-package org.springblade.common.tool;
+package org.springblade.nsms.tools;
 
 import lombok.SneakyThrows;
+import org.springblade.common.tool.SpringBeanUtil;
 import org.springblade.core.secure.BladeUser;
 import org.springblade.core.secure.utils.SecureUtil;
 import org.springblade.core.tool.utils.DateUtil;
@@ -39,7 +40,7 @@ public class ServiceImplUtil {
 	 * @return
 	 */
 	public static <T extends FoundationEntity> Long getNurseIdFromUser(BladeUser user) {
-		INurseInfoService iNurseInfoService=SpringBeanUtil.getBean(INurseInfoService.class);
+		INurseInfoService iNurseInfoService= SpringBeanUtil.getBean(INurseInfoService.class);
 		NurseInfo nurseInfo=iNurseInfoService.getNurseInfoByUserId(Func.toStr(user.getUserId()));
 		if (nurseInfo==null){
 			throw new RuntimeException("请确认账号是否关联了护士信息");

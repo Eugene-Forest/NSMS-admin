@@ -16,7 +16,7 @@
 package org.springblade.nsms.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import org.springblade.common.tool.ServiceImplUtil;
+import org.springblade.nsms.tools.ServiceImplUtil;
 import org.springblade.nsms.entity.NurseInfo;
 import org.springblade.nsms.mapper.NurseInfoMapper;
 import org.springblade.nsms.service.INurseInfoService;
