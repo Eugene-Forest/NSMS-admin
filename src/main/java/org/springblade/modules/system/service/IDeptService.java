@@ -71,4 +71,10 @@ public interface IDeptService extends IService<Dept> {
 	 */
 	boolean submit(Dept dept);
 
+	/**
+	 * 获取用户所在的部门id
+	 * @return
+	 */
+	String selectByUser();
+
 }

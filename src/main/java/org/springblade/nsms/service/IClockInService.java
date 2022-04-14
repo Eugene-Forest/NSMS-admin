@@ -15,10 +15,10 @@
  */
 package org.springblade.nsms.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springblade.nsms.entity.ClockIn;
 import org.springblade.nsms.vo.ClockInVO;
-import org.springblade.core.mp.base.BaseService;
-import com.baomidou.mybatisplus.core.metadata.IPage;
+import org.springblade.rewrite.FoundationService;
 
 /**
  * 打卡记录表 服务类
@@ -26,7 +26,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
  * @author Blade
  * @since 2022-04-11
  */
-public interface IClockInService extends BaseService<ClockIn> {
+public interface IClockInService extends FoundationService<ClockIn> {
 
 	/**
 	 * 自定义分页

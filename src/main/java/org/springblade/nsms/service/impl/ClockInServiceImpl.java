@@ -15,13 +15,13 @@
  */
 package org.springblade.nsms.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springblade.nsms.entity.ClockIn;
-import org.springblade.nsms.vo.ClockInVO;
 import org.springblade.nsms.mapper.ClockInMapper;
 import org.springblade.nsms.service.IClockInService;
-import org.springblade.core.mp.base.BaseServiceImpl;
+import org.springblade.nsms.vo.ClockInVO;
+import org.springblade.rewrite.FoundationServiceImpl;
 import org.springframework.stereotype.Service;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 
 /**
  * 打卡记录表 服务实现类
@@ -30,7 +30,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
  * @since 2022-04-11
  */
 @Service
-public class ClockInServiceImpl extends BaseServiceImpl<ClockInMapper, ClockIn> implements IClockInService {
+public class ClockInServiceImpl extends FoundationServiceImpl<ClockInMapper, ClockIn> implements IClockInService {
 
 	@Override
 	public IPage<ClockInVO> selectClockInPage(IPage<ClockInVO> page, ClockInVO clockIn) {

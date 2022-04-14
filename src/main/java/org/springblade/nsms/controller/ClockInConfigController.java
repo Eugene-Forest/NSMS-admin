@@ -21,12 +21,16 @@ import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springblade.core.mp.support.Condition;
 import org.springblade.core.mp.support.Query;
 import org.springblade.core.tool.api.R;
 import org.springblade.core.tool.utils.Func;
+import org.springblade.nsms.tools.QRCodeUtil;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestParam;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -114,7 +118,7 @@ public class ClockInConfigController extends BladeController {
 		return R.status(clockInConfigService.saveOrUpdate(clockInConfig));
 	}
 
-	
+
 	/**
 	 * 删除 打卡配置表
 	 */
@@ -125,5 +129,24 @@ public class ClockInConfigController extends BladeController {
 		return R.status(clockInConfigService.deleteLogic(Func.toLongList(ids)));
 	}
 
-	
+
+	@GetMapping("/getRQCodeRandomly")
+	@ApiOperationSupport(order = 8)
+	@ApiOperation(value = "获取一条随机的二维码信息", notes = "获取一条随机的二维码信息")
+	public R getRQCodeRandomly() {
+		return R.data(clockInConfigService.getBase64QRCodeRandomly());
+	}
+
+	@GetMapping("/getRQCodeByMessage")
+	@ApiOperationSupport(order = 9)
+	@ApiOperation(value = "获取一条随机的二维码信息", notes = "获取一条随机的二维码信息")
+	public R getRQCodeByMessage(@RequestParam String message) {
+		return R.data(clockInConfigService.getBase64QRByMessage(message));
+	}
+	@PostMapping("/submitVo")
+	@ApiOperationSupport(order = 10)
+	@ApiOperation(value = "提交新的打卡配置信息", notes = "传入clockInConfig")
+	public R submitVo(@Valid @RequestBody ClockInConfigVO clockInConfigVO) {
+		return R.status(clockInConfigService.saveOrUpdate(clockInConfigVO));
+	}
 }

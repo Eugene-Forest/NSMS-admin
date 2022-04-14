@@ -29,6 +29,7 @@ import org.springblade.modules.system.entity.Dept;
 import org.springblade.modules.system.mapper.DeptMapper;
 import org.springblade.modules.system.service.IDeptService;
 import org.springblade.modules.system.vo.DeptVO;
+import org.springblade.nsms.tools.ServiceImplUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -85,6 +86,16 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
 		}
 		dept.setIsDeleted(BladeConstant.DB_NOT_DELETED);
 		return saveOrUpdate(dept);
+	}
+
+	/**
+	 * 获取用户所在的部门id
+	 *
+	 * @return
+	 */
+	@Override
+	public String selectByUser() {
+		return String.valueOf(ServiceImplUtil.getNurseInfoFromUser().getDepartment());
 	}
 
 }

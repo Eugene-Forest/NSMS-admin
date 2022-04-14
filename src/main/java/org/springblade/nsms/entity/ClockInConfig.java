@@ -16,12 +16,19 @@
 package org.springblade.nsms.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import org.springblade.core.mp.base.BaseEntity;
 import java.time.LocalDateTime;
+import java.util.Date;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.springblade.rewrite.FoundationEntity;
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * 打卡配置表实体类
@@ -33,18 +40,16 @@ import io.swagger.annotations.ApiModelProperty;
 @TableName("com_clock_in_config")
 @EqualsAndHashCode(callSuper = true)
 @ApiModel(value = "ClockInConfig对象", description = "打卡配置表")
-public class ClockInConfig extends BaseEntity {
+public class ClockInConfig extends FoundationEntity {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * id
-     */
-    @ApiModelProperty(value = "id")
-    private Long id;
-    /**
      * 科室id
      */
+	@JsonSerialize(
+		using = ToStringSerializer.class
+	)
     @ApiModelProperty(value = "科室id")
     private Long deptId;
     /**
@@ -70,8 +75,14 @@ public class ClockInConfig extends BaseEntity {
     /**
      * 打卡日期/数据有效期
      */
-    @ApiModelProperty(value = "打卡日期/数据有效期")
-    private LocalDateTime clockInDate;
+	@DateTimeFormat(
+		pattern = "yyyy-MM-dd HH:mm:ss"
+	)
+	@JsonFormat(
+		pattern = "yyyy-MM-dd HH:mm:ss"
+	)
+    @ApiModelProperty(value = "打卡日期/数据有效期/截止时间")
+    private Date clockInDate;
 
 
 }

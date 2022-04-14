@@ -15,10 +15,11 @@
  */
 package org.springblade.nsms.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springblade.nsms.entity.ClockInConfig;
 import org.springblade.nsms.vo.ClockInConfigVO;
-import org.springblade.core.mp.base.BaseService;
-import com.baomidou.mybatisplus.core.metadata.IPage;
+import org.springblade.nsms.vo.RQInfoVO;
+import org.springblade.rewrite.FoundationService;
 
 /**
  * 打卡配置表 服务类
@@ -26,7 +27,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
  * @author Blade
  * @since 2022-04-11
  */
-public interface IClockInConfigService extends BaseService<ClockInConfig> {
+public interface IClockInConfigService extends FoundationService<ClockInConfig> {
 
 	/**
 	 * 自定义分页
@@ -37,4 +38,18 @@ public interface IClockInConfigService extends BaseService<ClockInConfig> {
 	 */
 	IPage<ClockInConfigVO> selectClockInConfigPage(IPage<ClockInConfigVO> page, ClockInConfigVO clockInConfig);
 
+	/**
+	 * 获取 Base64 格式的二维码
+	 * @return
+	 */
+	RQInfoVO getBase64QRCodeRandomly();
+
+	RQInfoVO getBase64QRByMessage(String message);
+
+	/**
+	 * 通过视图层实体保存或更新配置记录
+	 * @param clockInConfigVO 视图层实体
+	 * @return
+	 */
+	boolean saveOrUpdate(ClockInConfigVO clockInConfigVO);
 }

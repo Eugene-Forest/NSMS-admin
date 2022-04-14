@@ -15,13 +15,20 @@
  */
 package org.springblade.nsms.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springblade.nsms.entity.ClockInConfig;
-import org.springblade.nsms.vo.ClockInConfigVO;
 import org.springblade.nsms.mapper.ClockInConfigMapper;
 import org.springblade.nsms.service.IClockInConfigService;
-import org.springblade.core.mp.base.BaseServiceImpl;
+import org.springblade.nsms.tools.QRCodeUtil;
+import org.springblade.nsms.tools.ServiceImplUtil;
+import org.springblade.nsms.vo.ClockInConfigVO;
+import org.springblade.nsms.vo.RQInfoVO;
+import org.springblade.rewrite.FoundationServiceImpl;
 import org.springframework.stereotype.Service;
-import com.baomidou.mybatisplus.core.metadata.IPage;
+
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * 打卡配置表 服务实现类
@@ -30,11 +37,55 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
  * @since 2022-04-11
  */
 @Service
-public class ClockInConfigServiceImpl extends BaseServiceImpl<ClockInConfigMapper, ClockInConfig> implements IClockInConfigService {
+public class ClockInConfigServiceImpl extends FoundationServiceImpl<ClockInConfigMapper, ClockInConfig> implements IClockInConfigService {
 
 	@Override
 	public IPage<ClockInConfigVO> selectClockInConfigPage(IPage<ClockInConfigVO> page, ClockInConfigVO clockInConfig) {
 		return page.setRecords(baseMapper.selectClockInConfigPage(page, clockInConfig));
 	}
+
+	/**
+	 * 获取 Base64 格式的二维码
+	 *
+	 * @return
+	 */
+	@Override
+	public RQInfoVO getBase64QRCodeRandomly() {
+		//随机获取长度为20的字符串
+		String message= RandomStringUtils.randomAlphanumeric(20);
+		return getBase64QRByMessage(message);
+	}
+
+	@Override
+	public RQInfoVO getBase64QRByMessage(String message) {
+		RQInfoVO rqInfoVO=new RQInfoVO();
+		rqInfoVO.setMessage(message);
+		rqInfoVO.setRq(QRCodeUtil.getBase64QRCode(message));
+		return rqInfoVO;
+	}
+
+	/**
+	 * 通过视图层实体保存或更新配置记录
+	 *
+	 * @param clockInConfigVO 视图层实体
+	 * @return
+	 */
+	@Override
+	public boolean saveOrUpdate(ClockInConfigVO clockInConfigVO) {
+		//从视图层实体中提取必要信息：有效时长，打卡信息，部门，启用状态
+		ClockInConfig clockInConfig=new ClockInConfig();
+		//获取截止时间
+		Date now=new Date();
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(now);
+		cal.add(Calendar.MINUTE, clockInConfigVO.getEffectiveTime());
+		//赋值
+		clockInConfig.setClockInDate(cal.getTime());
+		clockInConfig.setState(clockInConfigVO.getState());
+		clockInConfig.setMessage(clockInConfigVO.getMessage());
+		clockInConfig.setDeptId(clockInConfigVO.getDeptId());
+		return saveOrUpdate(clockInConfig);
+	}
+
 
 }

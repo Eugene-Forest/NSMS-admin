@@ -32,4 +32,7 @@ import io.swagger.annotations.ApiModel;
 public class ClockInConfigVO extends ClockInConfig {
 	private static final long serialVersionUID = 1L;
 
+
+	private Integer effectiveTime;
+
 }

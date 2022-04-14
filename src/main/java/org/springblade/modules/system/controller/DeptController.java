@@ -111,5 +111,10 @@ public class DeptController extends BladeController {
 		return R.status(deptService.removeByIds(Func.toLongList(ids)));
 	}
 
-
+	@GetMapping("/selectByUser")
+	@ApiOperationSupport(order = 3)
+	@ApiOperation(value = "所在部门", notes = "所在部门")
+	public R selectByUser() {
+		return R.data(deptService.selectByUser());
+	}
 }

@@ -16,11 +16,11 @@
 package org.springblade.nsms.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import org.springblade.core.mp.base.BaseEntity;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.springblade.rewrite.FoundationEntity;
 
 /**
  * 打卡记录表实体类
@@ -32,15 +32,10 @@ import io.swagger.annotations.ApiModelProperty;
 @TableName("com_clock_in")
 @EqualsAndHashCode(callSuper = true)
 @ApiModel(value = "ClockIn对象", description = "打卡记录表")
-public class ClockIn extends BaseEntity {
+public class ClockIn extends FoundationEntity {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * id
-     */
-    @ApiModelProperty(value = "id")
-    private Long id;
     /**
      * 打卡类型
      */
