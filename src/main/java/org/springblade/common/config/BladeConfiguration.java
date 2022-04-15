@@ -53,4 +53,17 @@ public class BladeConfiguration implements WebMvcConfigurer {
 			.addResourceLocations("classpath:/META-INF/resources/webjars/");
 	}
 
+	/**
+	 * 跨域问题解决
+	 */
+//	@Override
+//	public void addCorsMappings(CorsRegistry registry) {
+//		registry.addMapping("/**")
+//			.allowedOrigins("*")
+//			.allowedHeaders("*")
+//			.allowedMethods("*")
+//			.maxAge(3600)
+//			.allowCredentials(true);
+//	}
+
 }

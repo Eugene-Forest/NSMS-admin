@@ -3,11 +3,11 @@ server:
   port: 8080
 #  port:  443
   #HTTPS协议默认端口号为443，需要使用其他端口时，您可以在此处自定义。
-#  ssl:
-#    key-alias: alias
-#    key-store-password: l1dw9es4    #填写pfx-password.txt文件内的密码。
-#    key-store-type: PKCS12
-#    key-store: classpath:7610256_www.pengweiquan.top.pfx   #您需要使用实际的证书名称替换domain name.pfx。
+  ssl:
+    key-alias: alias
+    key-store-password: l1dw9es4    #填写pfx-password.txt文件内的密码。
+    key-store-type: PKCS12
+    key-store: classpath:7610256_www.pengweiquan.top.pfx   #您需要使用实际的证书名称替换domain name.pfx。
   undertow:
     # 以下的配置会影响buffer,这些buffer会用于服务器连接的IO操作,有点类似netty的池化内存管理
     buffer-size: 1024

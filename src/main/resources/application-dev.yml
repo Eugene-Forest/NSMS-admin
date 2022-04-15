@@ -37,7 +37,7 @@ spring:
 #第三方登陆
 social:
   enabled: true
-  domain: http://127.0.0.1:80
+  domain: http://127.0.0.1:443
 
 #blade配置
 blade:
