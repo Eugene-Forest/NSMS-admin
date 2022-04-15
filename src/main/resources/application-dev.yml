@@ -4,6 +4,7 @@ spring:
     ##redis 单机环境配置
     host: 127.0.0.1
     port: 6379
+    ## 测试环境可以无密码，但是实际运行时需要
     password:
     database: 0
     ssl: false
@@ -13,15 +14,15 @@ spring:
     #  commandTimeout: 5000
   datasource:
     ## local mysql datasource configuration
-#    url: jdbc:mysql://localhost:3306/blade_boot_nsms_dev?useSSL=false&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&serverTimezone=GMT%2B8
-#    username: root
-#    password: 1244303915
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-    ## remote mysql datasource configuration for dev
-    url: jdbc:mysql://101.200.190.34:3306/nsms_dev?useSSL=false&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&serverTimezone=GMT%2B8
-    username: nsms
-    password: NSMS@all3
+    url: jdbc:mysql://localhost:3306/nsms_dev?useSSL=false&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&serverTimezone=GMT%2B8
+    username: root
+    password: 1244303915
     driver-class-name: com.mysql.cj.jdbc.Driver
+    ## remote mysql datasource configuration for dev
+#    url: jdbc:mysql://101.200.190.34:3306/nsms_dev?useSSL=false&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&serverTimezone=GMT%2B8
+#    username: nsms
+#    password: NSMS@all3
+#    driver-class-name: com.mysql.cj.jdbc.Driver
     ## remote mysql datasource configuration for test
 #    url: jdbc:mysql://101.200.190.34:3306/nsms_test?useSSL=false&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&serverTimezone=GMT%2B8
 #    username: nsms
@@ -36,7 +37,7 @@ spring:
 #第三方登陆
 social:
   enabled: true
-  domain: http://127.0.0.1:1888
+  domain: http://127.0.0.1:80
 
 #blade配置
 blade:
