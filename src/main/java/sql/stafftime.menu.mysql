@@ -1,0 +1,10 @@
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1516042775321456647', 1123598815738675201, 'stafftime', '', 'menu', '/nsms/stafftime', NULL, 1, 1, 0, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1516042775321456648', '1516042775321456647', 'stafftime_add', '新增', 'add', '/nsms/stafftime/add', 'plus', 1, 2, 1, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1516042775321456649', '1516042775321456647', 'stafftime_edit', '修改', 'edit', '/nsms/stafftime/edit', 'form', 2, 2, 2, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1516042775321456650', '1516042775321456647', 'stafftime_delete', '删除', 'delete', '/api/nsms/stafftime/remove', 'delete', 3, 2, 3, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1516042775321456651', '1516042775321456647', 'stafftime_view', '查看', 'view', '/nsms/stafftime/view', 'file-text', 4, 2, 2, 1, NULL, 0);

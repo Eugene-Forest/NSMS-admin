@@ -1,0 +1,10 @@
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1516042774679728134', 1123598815738675201, 'schedulingreference', '', 'menu', '/nsms/schedulingreference', NULL, 1, 1, 0, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1516042774679728135', '1516042774679728134', 'schedulingreference_add', '新增', 'add', '/nsms/schedulingreference/add', 'plus', 1, 2, 1, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1516042774679728136', '1516042774679728134', 'schedulingreference_edit', '修改', 'edit', '/nsms/schedulingreference/edit', 'form', 2, 2, 2, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1516042774679728137', '1516042774679728134', 'schedulingreference_delete', '删除', 'delete', '/api/nsms/schedulingreference/remove', 'delete', 3, 2, 3, 1, NULL, 0);
+INSERT INTO `blade_menu`(`id`, `parent_id`, `code`, `name`, `alias`, `path`, `source`, `sort`, `category`, `action`, `is_open`, `remark`, `is_deleted`)
+VALUES ('1516042774679728138', '1516042774679728134', 'schedulingreference_view', '查看', 'view', '/nsms/schedulingreference/view', 'file-text', 4, 2, 2, 1, NULL, 0);

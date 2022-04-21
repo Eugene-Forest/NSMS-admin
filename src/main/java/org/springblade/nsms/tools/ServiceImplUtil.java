@@ -19,6 +19,15 @@ import java.util.Date;
 public class ServiceImplUtil {
 
 
+	public static <T extends FoundationEntity> Long getUserId() {
+		BladeUser user =  SecureUtil.getUser();
+		if (user!=null){
+			return user.getUserId();
+		}else {
+			throw new RuntimeException("账号异常！");
+		}
+	}
+
 	/**
 	 * 获取用户对应的账号id
 	 * @param <T>
@@ -64,6 +73,30 @@ public class ServiceImplUtil {
 	}
 
 	/**
+	 * 获取账号对应的护士的所在部门
+	 */
+	public static <T extends FoundationEntity> Long getNurseDeptFromUser(BladeUser user){
+		INurseInfoService iNurseInfoService= SpringBeanUtil.getBean(INurseInfoService.class);
+		NurseInfo nurseInfo=iNurseInfoService.getNurseInfoByUserId(Func.toStr(user.getUserId()));
+		if (nurseInfo==null){
+			throw new RuntimeException("请确认账号是否关联了护士信息");
+		}
+		return nurseInfo.getDepartment();
+	}
+
+	/**
+	 *  获取账号对应的护士的所在部门
+	 */
+	public static <T extends FoundationEntity> Long getNurseDeptFromUser(){
+		BladeUser user =  SecureUtil.getUser();
+		if (user!=null){
+			return getNurseDeptFromUser(user);
+		}else {
+			throw new RuntimeException("账号异常！");
+		}
+	}
+
+	/**
 	 * 获取账号对应的护士信息
 	 * @param user
 	 * @param <T>
@@ -77,9 +110,6 @@ public class ServiceImplUtil {
 		}
 		return nurseInfo;
 	}
-
-
-
 
 
 	public static <T extends FoundationEntity> void resolveEntity(T entity) {
