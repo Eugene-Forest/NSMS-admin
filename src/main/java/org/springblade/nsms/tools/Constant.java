@@ -47,6 +47,62 @@ public class Constant {
 	 */
 	public static Integer EXPECTATION_TYPE_VACATION=20;
 
+	/**
+	 * 期望实现状态： 已实现
+	 */
+	public static Integer ACTUAL_STATE_SUCCESS=1;
 
+	/**
+	 * 期望实现状态： 待实现
+	 */
+	public static Integer ACTUAL_STATE_WAIT=0;
+
+	/**
+	 * 期望实现状态： 未实现
+	 */
+	public static Integer ACTUAL_STATE_FAILURE=2;
+
+
+	/**
+	 * 逻辑删除的标识符： 已被逻辑删除
+	 */
+	public static Integer RECORD_IS_DELETED=1;
+
+	/**
+	 * 逻辑删除的标识符： 未被逻辑删除
+	 */
+	public static Integer RECORD_IS_NOT_DELETED=0;
+
+
+	/**
+	 * 换班申请审核状态： 待商议
+	 */
+	public static Integer EXCHANGE_APPROVAL_STATUS_PENDING=0;
+
+	/**
+	 * 换班申请审核状态： 被申请人不同意
+	 */
+	public static Integer EXCHANGE_APPROVAL_STATUS_DISAGREE=1;
+
+	/**
+	 * 换班申请审核状态： 被申请人同意
+	 */
+	public static Integer EXCHANGE_APPROVAL_STATUS_AGREE=2;
+
+	/**
+	 * 换班申请审核状态： 待审核
+	 */
+	public static Integer EXCHANGE_APPROVAL_STATUS_PENDING_CHECK=3;
+
+	/**
+	 * 换班申请审核状态： 护士长驳回
+	 */
+	public static Integer EXCHANGE_APPROVAL_STATUS_REJECT=4;
+
+	/**
+	 * 换班申请审核状态： 护士长同意
+	 */
+	public static Integer EXCHANGE_APPROVAL_STATUS_PASS=5;
 
 }
+
