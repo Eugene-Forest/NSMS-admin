@@ -15,10 +15,15 @@
  */
 package org.springblade.nsms.service;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.sun.istack.NotNull;
 import org.springblade.nsms.entity.Expectation;
+import org.springblade.nsms.entity.NurseInfo;
 import org.springblade.nsms.vo.ExpectationVO;
 import org.springblade.rewrite.FoundationService;
+
+import java.util.List;
 
 /**
  * 护士助手的排班期望表 服务类
@@ -41,4 +46,17 @@ public interface IExpectationService extends FoundationService<Expectation> {
 	 * 获取调用人的对于某排班配置表的期望的目前优先级
 	 */
 	Integer getPriority(String referenceSid);
+
+	boolean saveOrUpdateExpectationVO( ExpectationVO expectation);
+
+
+	boolean deleteExpectationVO(List<Long> ids);
+
+	/**
+	 * 对数据进行了简单处理的分页查询；（数据权限功能待添加）
+	 * @param queryWrapper
+	 * @param expectation
+	 * @return
+	 */
+	IPage<ExpectationVO> selectExpectationPage(Wrapper<ExpectationVO> queryWrapper, ExpectationVO expectation);
 }

@@ -15,6 +15,7 @@
  */
 package org.springblade.nsms.service;
 
+import com.sun.istack.NotNull;
 import org.springblade.nsms.entity.NurseInfo;
 import org.springblade.nsms.vo.NurseInfoVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -45,6 +46,11 @@ public interface INurseInfoService extends FoundationService<NurseInfo> {
 	 */
 	NurseInfo getNurseInfoByUserId(String userId);
 
+
+	/**
+	 * todo 对于以下方法，应当可以通过调整参数和myabtis实现来合并在一起
+	 */
+
 	/**
 	 * 获取同部门的同事的信息--id--name
 	 * @return
@@ -58,15 +64,18 @@ public interface INurseInfoService extends FoundationService<NurseInfo> {
 	List<NurseInfo> selectHeadNurseFromSameDept();
 
 	/**
-	 * 获取同部门的护士助手的信息--id--name
+	 * 获取同部门的所有护士助手的信息--id--name
 	 * @return
 	 */
 	List<NurseInfo> selectNursesFromSameDept();
 
 	/**
-	 * 获取同部门的护士长的信息--id--name
+	 * 获取同部门的所有护士长的信息--id--name
 	 * @return
 	 */
 	List<NurseInfo> selectHeadNursesFromSameDept();
+
+
+	List<NurseInfo> selectAllFromSameDept();
 
 }

@@ -62,4 +62,12 @@ public interface NurseInfoMapper extends BaseMapper<NurseInfo> {
 	 * @return
 	 */
 	List<NurseInfo> selectHeadNurseFromSameDept(@NotNull Long deptId,@NotNull String tenantId,Long myId);
+
+	/**
+	 * 获取同部门所有未离职护理人员的信息
+	 * @param deptId
+	 * @param tenantId
+	 * @return
+	 */
+	List<NurseInfo> selectAllFromSameDept(@NotNull Long deptId,@NotNull String tenantId);
 }

@@ -62,4 +62,9 @@
             and A.id != #{myId}
         </if>
     </select>
+
+    <select id="selectAllFromSameDept" resultMap="nurseInfoResultMap">
+        select * from com_nurse_info
+        where is_deleted=0 and tenant_id=#{tenantId} and create_dept=#{deptId} and working_condition=1
+    </select>
 </mapper>

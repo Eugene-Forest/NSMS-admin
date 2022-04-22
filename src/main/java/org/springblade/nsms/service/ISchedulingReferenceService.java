@@ -45,4 +45,19 @@ public interface ISchedulingReferenceService extends FoundationService<Schedulin
 	 * @return
 	 */
 	List<SchedulingReferenceVO> selectByUserDept();
+
+	/**
+	 * 改变排班配置表的状态为待排班、期望输入、或未启用
+	 * @param schedulingReferenceVO
+	 * @return
+	 */
+	boolean changeReferenceConfigState(SchedulingReferenceVO schedulingReferenceVO);
+
+
+	/**
+	 * 排班
+	 * @param schedulingReferenceVO
+	 * @return
+	 */
+	boolean scheduling(SchedulingReferenceVO schedulingReferenceVO);
 }

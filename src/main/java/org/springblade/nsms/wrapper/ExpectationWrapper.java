@@ -42,18 +42,19 @@ public class ExpectationWrapper extends BaseEntityWrapper<Expectation, Expectati
 	public ExpectationVO entityVO(Expectation expectation) {
 		ExpectationVO expectationVO = BeanUtil.copy(expectation, ExpectationVO.class);
 		//对日期范围字段进行封装赋值
-//		先对期望类型进行判断
-		if (expectation.getExpectationType().equals(Constant.EXPECTATION_TYPE_DAY_NUMBER) ||
-			expectation.getExpectationType().equals(Constant.EXPECTATION_TYPE_NIGHT_NUMBER)){
-			return expectationVO;
-		}
+////		先对期望类型进行判断
+//		if (expectation.getExpectationType().equals(Constant.EXPECTATION_TYPE_DAY_NUMBER) ||
+//			expectation.getExpectationType().equals(Constant.EXPECTATION_TYPE_NIGHT_NUMBER)){
+//			return expectationVO;
+//		}
 		//数据验证
-		if (expectation.getEndDate()==null||expectation.getStartDate()==null){
-			return expectationVO;
-		}
 		List<String> dateList=new ArrayList<>();
-		dateList.add(DateUtil.format(expectation.getStartDate(),"yyyy-MM-dd HH:mm:ss"));
-		dateList.add(DateUtil.format(expectation.getEndDate(),"yyyy-MM-dd HH:mm:ss"));
+		if (expectation.getStartDate()!=null){
+			dateList.add(DateUtil.format(expectation.getStartDate(),"yyyy-MM-dd HH:mm:ss"));
+		}
+		if (expectation.getEndDate()!=null){
+			dateList.add(DateUtil.format(expectation.getEndDate(),"yyyy-MM-dd HH:mm:ss"));
+		}
 		expectationVO.setDateRange(dateList);
 		return expectationVO;
 	}

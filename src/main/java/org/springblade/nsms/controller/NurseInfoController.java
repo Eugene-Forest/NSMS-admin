@@ -156,16 +156,25 @@ public class NurseInfoController extends BladeController {
 
 	@GetMapping("/selectNurses")
 	@ApiOperationSupport(order = 8)
-	@ApiOperation(value = "同部门护士助手下拉列表")
+	@ApiOperation(value = "同部门所有护士助手下拉列表")
 	public R  selectNursesFromSameDept(){
 		return R.data(nurseInfoService.selectNursesFromSameDept());
 	}
 
 	@GetMapping("/selectHeadNurses")
 	@ApiOperationSupport(order = 9)
-	@ApiOperation(value = "同部门护士长下拉列表")
+	@ApiOperation(value = "同部门所有护士长下拉列表")
 	public R  selectHeadNurses(){
 		return R.data(nurseInfoService.selectHeadNursesFromSameDept());
 	}
+
+
+	@GetMapping("/selectAllCo")
+	@ApiOperationSupport(order = 10)
+	@ApiOperation(value = "同部门所有护士长下拉列表")
+	public R  selectAllCo(){
+		return R.data(nurseInfoService.selectAllFromSameDept());
+	}
+
 
 }

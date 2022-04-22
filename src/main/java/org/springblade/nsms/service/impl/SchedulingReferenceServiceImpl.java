@@ -92,5 +92,40 @@ public class SchedulingReferenceServiceImpl extends FoundationServiceImpl<Schedu
 			.collect(Collectors.toList());
 	}
 
+	/**
+	 * 改变排班配置表的状态为待排班、期望输入、或未启用
+	 *
+	 * @param schedulingReferenceVO
+	 * @return
+	 */
+	@Override
+	public boolean changeReferenceConfigState(SchedulingReferenceVO schedulingReferenceVO) {
+		//todo 身份验证
+		if (schedulingReferenceVO.getState()>Constant.REFERENCE_CONFIG_STATE_WAIT_FOR_SCHEDULING
+		|| schedulingReferenceVO.getState()<Constant.REFERENCE_CONFIG_STATE_UNUSED){
+			throw new RuntimeException("更改的状态值异常，请重新提交！");
+		}
+		//获取源数据
+		SchedulingReference origin=baseMapper.selectOne(
+			Condition.getQueryWrapper(schedulingReferenceVO)
+		);
+		if (origin==null){
+			throw new RuntimeException("数据异常，请重新提交");
+		}
+		origin.setState(schedulingReferenceVO.getState());
+		return this.saveOrUpdate(origin);
+	}
+
+	/**
+	 * 排班
+	 *
+	 * @param schedulingReferenceVO
+	 * @return
+	 */
+	@Override
+	public boolean scheduling(SchedulingReferenceVO schedulingReferenceVO) {
+		return false;
+	}
+
 
 }
