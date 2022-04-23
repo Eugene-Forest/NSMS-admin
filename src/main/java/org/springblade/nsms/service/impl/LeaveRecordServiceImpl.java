@@ -15,6 +15,7 @@
  */
 package org.springblade.nsms.service.impl;
 
+import org.springblade.nsms.tools.Constant;
 import org.springblade.nsms.tools.ServiceImplUtil;
 import org.springblade.common.tool.SpringBeanUtil;
 import org.springblade.core.secure.BladeUser;
@@ -107,13 +108,15 @@ public class LeaveRecordServiceImpl extends FoundationServiceImpl<LeaveRecordMap
 	 */
 	@Override
 	public boolean checkInLeaveRecord(LeaveRecord leaveRecord) {
-		if(leaveRecord.getApprovalStatus()>3||leaveRecord.getApprovalStatus()<0){
+		//被审核后的状态必定为 驳回/通过 良种之一
+		if(!leaveRecord.getApprovalStatus().equals(Constant.APPROVAL_STATUS_PASS)
+			&& !leaveRecord.getApprovalStatus().equals(Constant.APPROVAL_STATUS_REJECT)){
 			throw new RuntimeException("请确认审核状态是否准确！");
 		}
 		//step1：通过传入的请假记录从数据库中获取源数据
 		LeaveRecord originLeaveRecord = baseMapper.selectById(leaveRecord.getId());
 		//step2: 判断源数据是否已经审批
-		if (originLeaveRecord.getApprovalStatus()==0){
+		if (originLeaveRecord.getApprovalStatus().equals(Constant.APPROVAL_STATUS_PENDING)){
 			originLeaveRecord.setApprovalStatus(leaveRecord.getApprovalStatus());
 			originLeaveRecord.setApprovalOpinion(leaveRecord.getApprovalOpinion());
 			//添加审核人的信息
@@ -135,13 +138,15 @@ public class LeaveRecordServiceImpl extends FoundationServiceImpl<LeaveRecordMap
 		//step1：通过传入的请假记录从数据库中获取源数据
 		LeaveRecord originLeaveRecord = baseMapper.selectById(leaveRecord.getId());
 		//step2: 判断源数据是否处于审核完成的状态
-		if (originLeaveRecord.getApprovalStatus()==0){
-			//如果不处于审核状态则出错
-			throw new RuntimeException("反审失败！请确认请假记录是否处于未被审核状态。");
-		}else {
+		if (originLeaveRecord.getApprovalStatus().equals(Constant.APPROVAL_STATUS_PASS)
+			|| originLeaveRecord.getApprovalStatus().equals(Constant.APPROVAL_STATUS_REJECT)){
 			originLeaveRecord.setApprover(ServiceImplUtil.getNurseIdFromUser());
 			originLeaveRecord.setApprovalOpinion(leaveRecord.getApprovalOpinion());
+			originLeaveRecord.setApprovalStatus(Constant.APPROVAL_STATUS_PENDING);
 			return baseMapper.updateById(originLeaveRecord)==1?true:false;
+		}else {
+			//如果不处于审核完成的状态则出错
+			throw new RuntimeException("反审失败！请确认请假记录是否处于未被审核状态。");
 		}
 	}
 }

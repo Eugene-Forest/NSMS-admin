@@ -104,5 +104,21 @@ public class Constant {
 	 */
 	public static Integer EXCHANGE_APPROVAL_STATUS_PASS=5;
 
+	/**
+	 * 请假申请审核状态： 未审核
+	 */
+	public static Integer APPROVAL_STATUS_PENDING=0;
+
+
+	/**
+	 * 请假申请审核状态： 驳回
+	 */
+	public static Integer APPROVAL_STATUS_REJECT=1;
+
+
+	/**
+	 * 请假申请审核状态： 同意
+	 */
+	public static Integer APPROVAL_STATUS_PASS=2;
 }
 
