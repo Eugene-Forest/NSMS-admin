@@ -28,6 +28,7 @@ import org.springblade.nsms.vo.ExpectationVO;
 import org.springblade.rewrite.FoundationEntity;
 import org.springblade.rewrite.FoundationServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DateFormat;
 import java.util.Collections;
@@ -76,8 +77,8 @@ public class ExpectationServiceImpl extends FoundationServiceImpl<ExpectationMap
 			expectation.setEndDate(DateFormat.getDateInstance().parse(dateList.get(1)));
 			expectation.setNurseSid(ServiceImplUtil.getNurseIdFromUser());
 			expectation.setActualState(Constant.ACTUAL_STATE_WAIT);
-
-			return this.saveOrUpdate(expectation);
+			boolean state=this.saveOrUpdate(expectation);
+			return state;
 		}catch (Exception e){
 			throw new RuntimeException(e.getMessage());
 		}
@@ -98,7 +99,8 @@ public class ExpectationServiceImpl extends FoundationServiceImpl<ExpectationMap
 		//删除期望需要注意对后续期望的影响
 //		先获取现有的本人的此次排班的所有的期望数据
 		List<Expectation> originList=baseMapper.selectList(
-			Condition.getQueryWrapper(origin)
+			Condition.getQueryWrapper(new Expectation())
+				.eq("tenant_id", ServiceImplUtil.getUserTenantId())
 				.eq("create_user", ServiceImplUtil.getUserId())
 				.eq("reference_sid", origin.getReferenceSid())
 				.eq("is_deleted", Constant.RECORD_IS_NOT_DELETED)
@@ -112,14 +114,22 @@ public class ExpectationServiceImpl extends FoundationServiceImpl<ExpectationMap
 		// 删除
 		flag=flag&&deleteLogic(ids);
 		//删除选中的部分，将剩余的部分由小到大重新编号
-		originList=originList.stream().filter(x->ids.contains(x.getId())).collect(Collectors.toList());
+		originList=originList.stream().filter(x->!(ids.contains(x.getId()))).collect(Collectors.toList());
 		//升序排序
 		originList=originList.stream().sorted(Comparator.comparing(Expectation::getPriority)).collect(Collectors.toList());
 		//按顺序保存
 		for(int i=0;i<originList.size();i++){
 			Expectation expectation=originList.get(i);
 			expectation.setPriority(i+1);
-			flag=flag&saveOrUpdate(expectation);
+			boolean s=this.saveOrUpdate(expectation);
+			//todo 需要一些判断是否成功执行这些更新操作
+			if (s){
+				continue;
+			}else {
+				flag=false;
+				//抛出异常事务回滚
+				break;
+			}
 		}
 		return flag;
 	}

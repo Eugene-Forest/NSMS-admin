@@ -18,6 +18,14 @@ import java.util.Date;
  **/
 public class ServiceImplUtil {
 
+	public static <T extends FoundationEntity> String getUserTenantId() {
+		BladeUser user =  SecureUtil.getUser();
+		if (user!=null){
+			return user.getTenantId();
+		}else {
+			throw new RuntimeException("账号异常！");
+		}
+	}
 
 	public static <T extends FoundationEntity> Long getUserId() {
 		BladeUser user =  SecureUtil.getUser();
