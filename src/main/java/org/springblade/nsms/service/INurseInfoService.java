@@ -16,6 +16,7 @@
 package org.springblade.nsms.service;
 
 import com.sun.istack.NotNull;
+import org.springblade.nsms.dto.NurseInfoDTO;
 import org.springblade.nsms.entity.NurseInfo;
 import org.springblade.nsms.vo.NurseInfoVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -76,6 +77,15 @@ public interface INurseInfoService extends FoundationService<NurseInfo> {
 	List<NurseInfo> selectHeadNursesFromSameDept();
 
 
+	/**
+	 * 获取同部门所有未离职护理人员（护士、助手、护士长）的信息
+	 * @return
+	 */
 	List<NurseInfo> selectAllFromSameDept();
 
+	/**
+	 * 获取同部门所有未离职基础护理人员（护士、助手）的信息
+	 * @return
+	 */
+	List<NurseInfoDTO> selectAllBaseNurseFromSampDept();
 }

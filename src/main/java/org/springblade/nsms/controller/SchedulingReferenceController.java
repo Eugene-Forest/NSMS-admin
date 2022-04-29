@@ -141,8 +141,18 @@ public class SchedulingReferenceController extends BladeController {
 		return R.data(schedulingReferenceService.changeReferenceConfigState(schedulingReferenceVO));
 	}
 
+	@PostMapping("/recheckReferenceConfigState")
+	@ApiOperationSupport(order = 9)
+	@ApiOperation(value = "改变排班配置表的状态为待排班")
+	public R recheckReferenceConfigState(
+		@Valid @RequestBody SchedulingReferenceVO schedulingReferenceVO) {
+		//todo 当状态从排班失败、排班成功转为待排班时，将原来排班结果的数据逻辑删除
+		return R.status(schedulingReferenceService.recheckReferenceConfigState(schedulingReferenceVO));
+	}
+
+
 	@PostMapping("/scheduling")
-	@ApiOperationSupport(order = 10)
+	@ApiOperationSupport(order = 11)
 	@ApiOperation(value = "排班", notes = "传入id")
 	public R scheduling(@Valid @RequestBody SchedulingReferenceVO schedulingReferenceVO) {
 		return R.data(schedulingReferenceService.scheduling(schedulingReferenceVO));

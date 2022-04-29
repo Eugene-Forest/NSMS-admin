@@ -16,6 +16,7 @@
 package org.springblade.nsms.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import org.springblade.nsms.dto.NurseInfoDTO;
 import org.springblade.nsms.tools.ServiceImplUtil;
 import org.springblade.nsms.entity.NurseInfo;
 import org.springblade.nsms.mapper.NurseInfoMapper;
@@ -111,5 +112,13 @@ public class NurseInfoServiceImpl extends FoundationServiceImpl<NurseInfoMapper,
 		NurseInfo nurseInfo=ServiceImplUtil.getNurseInfoFromUser();
 		return baseMapper.selectAllFromSameDept(nurseInfo.getDepartment(), nurseInfo.getTenantId());
 	}
+
+
+	@Override
+	public List<NurseInfoDTO> selectAllBaseNurseFromSampDept() {
+		NurseInfo nurseInfo=ServiceImplUtil.getNurseInfoFromUser();
+		return baseMapper.selectAllBaseNurseFromSampDept(nurseInfo.getDepartment(), nurseInfo.getTenantId());
+	}
+
 
 }

@@ -17,6 +17,11 @@ package org.springblade.nsms.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springblade.core.mp.support.Condition;
+import org.springblade.core.tool.utils.SpringUtil;
+import org.springblade.nsms.dto.ExpectationDTO;
+import org.springblade.nsms.dto.NurseDTO;
+import org.springblade.nsms.dto.NurseInfoDTO;
+import org.springblade.nsms.entity.Expectation;
 import org.springblade.nsms.entity.NurseInfo;
 import org.springblade.nsms.entity.SchedulingReference;
 import org.springblade.nsms.mapper.SchedulingReferenceMapper;
@@ -85,7 +90,7 @@ public class SchedulingReferenceServiceImpl extends FoundationServiceImpl<Schedu
 				Condition.getQueryWrapper(new SchedulingReference())
 					.eq("department_id", nurseInfo.getDepartment())
 					.eq("tenant_id", nurseInfo.getTenantId())
-					.eq("state", Constant.REFERENCE_CONFIG_STATE_ADD_EXPECTATION));
+					.eq("state", Constant.SCHEDULING_REFERENCE_CONFIG_ADD_EXPECTATION));
 		return schedulingReferences
 			.stream()
 			.map(x->SchedulingReferenceWrapper.build().resolveEntityForSelect(x))
@@ -101,18 +106,58 @@ public class SchedulingReferenceServiceImpl extends FoundationServiceImpl<Schedu
 	@Override
 	public boolean changeReferenceConfigState(SchedulingReferenceVO schedulingReferenceVO) {
 		//todo 身份验证
-		if (schedulingReferenceVO.getState()>Constant.REFERENCE_CONFIG_STATE_WAIT_FOR_SCHEDULING
-		|| schedulingReferenceVO.getState()<Constant.REFERENCE_CONFIG_STATE_UNUSED){
+		//排班前的状态变换只能在前三种情况之下： 未启用、期望录入、待排班
+		if (
+			!schedulingReferenceVO.getState().equals(Constant.SCHEDULING_REFERENCE_CONFIG_NOT_ENABLED)
+			&& !schedulingReferenceVO.getState().equals(Constant.SCHEDULING_REFERENCE_CONFIG_ADD_EXPECTATION)
+			&& !schedulingReferenceVO.getState().equals(Constant.SCHEDULING_REFERENCE_CONFIG_WAITING_FOR_SCHEDULING)
+		){
 			throw new RuntimeException("更改的状态值异常，请重新提交！");
 		}
 		//获取源数据
-		SchedulingReference origin=baseMapper.selectOne(
-			Condition.getQueryWrapper(schedulingReferenceVO)
+		SchedulingReference origin=baseMapper.selectById(
+			schedulingReferenceVO.getId()
 		);
 		if (origin==null){
 			throw new RuntimeException("数据异常，请重新提交");
 		}
+		//判断配置原状态是否时排班前
+		if (
+			!origin.getState().equals(Constant.SCHEDULING_REFERENCE_CONFIG_NOT_ENABLED)
+				&& !origin.getState().equals(Constant.SCHEDULING_REFERENCE_CONFIG_ADD_EXPECTATION)
+				&& !origin.getState().equals(Constant.SCHEDULING_REFERENCE_CONFIG_WAITING_FOR_SCHEDULING)
+		){
+			throw new RuntimeException("更改的状态值异常，请重新提交！");
+		}
 		origin.setState(schedulingReferenceVO.getState());
+		return this.saveOrUpdate(origin);
+	}
+
+	/**
+	 * 改变排班配置表的状态为待排班
+	 *
+	 * @param schedulingReferenceVO
+	 * @return
+	 */
+	@Override
+	public boolean recheckReferenceConfigState(SchedulingReferenceVO schedulingReferenceVO) {
+		//todo 改变排班配置表的状态为待排班
+		//获取源数据
+		SchedulingReference origin=baseMapper.selectById(
+			schedulingReferenceVO.getId()
+		);
+		if (origin==null){
+			throw new RuntimeException("数据异常，请重新提交");
+		}
+		//判断配置原状态是否围为排班结果
+		if (
+			!origin.getState().equals(Constant.SCHEDULING_REFERENCE_CONFIG_SCHEDULING_FAILURE)
+			&& !origin.getState().equals(Constant.SCHEDULING_REFERENCE_CONFIG_SCHEDULING_SUCCESS)
+		){
+			throw new RuntimeException("数据异常的状态值异常，请重新提交！");
+		}
+		//改为待排班并更新
+		origin.setState(Constant.SCHEDULING_REFERENCE_CONFIG_WAITING_FOR_SCHEDULING);
 		return this.saveOrUpdate(origin);
 	}
 
@@ -124,6 +169,28 @@ public class SchedulingReferenceServiceImpl extends FoundationServiceImpl<Schedu
 	 */
 	@Override
 	public boolean scheduling(SchedulingReferenceVO schedulingReferenceVO) {
+		//获取排班配置的源数据
+		SchedulingReference origin=baseMapper.selectById(
+			schedulingReferenceVO.getId()
+		);
+		if (origin==null){
+			throw new RuntimeException("排班配置的数据异常");
+		}
+		//获取必要的基础信息，科室人员信息，科室人员期望
+		List<NurseDTO> nurseDTOList=
+			SpringUtil.getContext().getBean(NurseInfoServiceImpl.class).selectAllBaseNurseFromSampDept()
+				.stream().map(x-> new NurseDTO(x.getId(),x.getCategory())).collect(Collectors.toList());
+		List<Expectation> expectationDTOList=
+			SpringUtil.getContext().getBean(ExpectationServiceImpl.class).list(
+				Condition.getQueryWrapper(new Expectation())
+					.eq("tenant_id", ServiceImplUtil.getUserTenantId())
+					.eq("create_dept", ServiceImplUtil.getNurseDeptFromUser())
+					.eq("is_deleted", 0)
+					.eq("reference_sid", origin.getId())
+			);
+
+		//创建排班姐结果对象
+
 		return false;
 	}
 

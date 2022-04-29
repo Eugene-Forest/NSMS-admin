@@ -53,6 +53,12 @@ public interface ISchedulingReferenceService extends FoundationService<Schedulin
 	 */
 	boolean changeReferenceConfigState(SchedulingReferenceVO schedulingReferenceVO);
 
+	/**
+	 * 改变排班配置表的状态为待排班
+	 * @param schedulingReferenceVO
+	 * @return
+	 */
+	boolean recheckReferenceConfigState(SchedulingReferenceVO schedulingReferenceVO);
 
 	/**
 	 * 排班

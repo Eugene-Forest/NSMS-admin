@@ -30,4 +30,8 @@ import lombok.EqualsAndHashCode;
 public class ExpectationDTO extends Expectation {
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * 护理人员的职位类型
+	 */
+	private Integer postType;
 }

@@ -30,4 +30,5 @@ import lombok.EqualsAndHashCode;
 public class NurseInfoDTO extends NurseInfo {
 	private static final long serialVersionUID = 1L;
 
+	private Integer category;
 }

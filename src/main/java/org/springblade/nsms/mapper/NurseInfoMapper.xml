@@ -25,7 +25,6 @@
         <result column="user_id" property="userId"/>
     </resultMap>
 
-
     <select id="selectNurseInfoPage" resultMap="nurseInfoResultMap">
         select * from com_nurse_info where is_deleted = 0
     </select>
@@ -66,5 +65,17 @@
     <select id="selectAllFromSameDept" resultMap="nurseInfoResultMap">
         select * from com_nurse_info
         where is_deleted=0 and tenant_id=#{tenantId} and create_dept=#{deptId} and working_condition=1
+    </select>
+
+
+    <select id="selectAllBaseNurseFromSampDept" resultType="org.springblade.nsms.dto.NurseInfoDTO">
+        SELECT A.id,B.category from
+            (select * from com_nurse_info
+             where is_deleted=0 and tenant_id=#{tenantId} and create_dept=#{deptId} and working_condition=1) as A
+                LEFT JOIN
+            (select * from blade_post
+             where is_deleted=0 and tenant_id=#{tenantId}) as B
+            on A.position = B.id
+        WHERE B.category > 11
     </select>
 </mapper>

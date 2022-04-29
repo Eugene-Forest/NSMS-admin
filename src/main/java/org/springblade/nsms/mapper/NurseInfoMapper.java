@@ -19,6 +19,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.sun.istack.NotNull;
 import org.mapstruct.Mapper;
+import org.springblade.nsms.dto.NurseInfoDTO;
 import org.springblade.nsms.entity.NurseInfo;
 import org.springblade.nsms.vo.NurseInfoVO;
 
@@ -70,4 +71,13 @@ public interface NurseInfoMapper extends BaseMapper<NurseInfo> {
 	 * @return
 	 */
 	List<NurseInfo> selectAllFromSameDept(@NotNull Long deptId,@NotNull String tenantId);
+
+	/**
+	 * 获取同部门所有未离职基础护理人员（护士、助手）的信息
+	 * @param deptId
+	 * @param tenantId
+	 * @return
+	 */
+	List<NurseInfoDTO> selectAllBaseNurseFromSampDept(@NotNull Long deptId, @NotNull String tenantId);
+
 }
