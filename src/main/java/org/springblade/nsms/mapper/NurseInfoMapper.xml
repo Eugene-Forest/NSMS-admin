@@ -37,7 +37,7 @@
     <select id="selectCoWorkerFromSameDept" resultMap="nurseInfoResultMap">
         SELECT A.id,A.name from
             (select * from com_nurse_info
-                where is_deleted=0 and tenant_id=#{tenantId} and create_dept=#{deptId} and working_condition=1) as A
+                where is_deleted=0 and tenant_id=#{tenantId} and department=#{deptId} and working_condition=1) as A
             LEFT JOIN
             (select * from blade_post
                 where is_deleted=0 and tenant_id=#{tenantId}) as B
@@ -51,7 +51,7 @@
     <select id="selectHeadNurseFromSameDept" resultMap="nurseInfoResultMap">
         SELECT A.id,A.name from
             (select * from com_nurse_info
-             where is_deleted=0 and tenant_id=#{tenantId} and create_dept=#{deptId} and working_condition=1) as A
+             where is_deleted=0 and tenant_id=#{tenantId} and department=#{deptId} and working_condition=1) as A
                 LEFT JOIN
             (select * from blade_post
              where is_deleted=0 and tenant_id=#{tenantId}) as B
@@ -64,14 +64,14 @@
 
     <select id="selectAllFromSameDept" resultMap="nurseInfoResultMap">
         select * from com_nurse_info
-        where is_deleted=0 and tenant_id=#{tenantId} and create_dept=#{deptId} and working_condition=1
+        where is_deleted=0 and tenant_id=#{tenantId} and department=#{deptId} and working_condition=1
     </select>
 
 
     <select id="selectAllBaseNurseFromSampDept" resultType="org.springblade.nsms.dto.NurseInfoDTO">
         SELECT A.id,B.category from
             (select * from com_nurse_info
-             where is_deleted=0 and tenant_id=#{tenantId} and create_dept=#{deptId} and working_condition=1) as A
+             where is_deleted=0 and tenant_id=#{tenantId} and department=#{deptId} and working_condition=1) as A
                 LEFT JOIN
             (select * from blade_post
              where is_deleted=0 and tenant_id=#{tenantId}) as B

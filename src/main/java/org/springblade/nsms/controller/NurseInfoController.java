@@ -77,7 +77,7 @@ public class NurseInfoController extends BladeController {
 			pages = nurseInfoService.page(Condition.getPage(query),
 				Condition.getQueryWrapper(nurseInfo).
 					eq("tenant_id",user.getTenantId()).
-					eq("create_dept", user.getDeptId()));
+					eq("department", user.getDeptId()));
 			return R.data(NurseInfoWrapper.build().pageVO(pages));
 		}else {
 			throw new RuntimeException("请确认此账号是否属于租户！");
