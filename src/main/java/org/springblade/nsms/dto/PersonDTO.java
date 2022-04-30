@@ -34,7 +34,7 @@ public class PersonDTO {
 
 	public PersonDTO(final PersonDTO personDTO) {
 		this.nurseId = personDTO.getNurseId();
-		this.postType = personDTO.getType();
+		this.postType = personDTO.getPostType();
 	}
 
 	public PersonDTO(final Long nurseId,final Integer postType) {
@@ -101,5 +101,16 @@ public class PersonDTO {
 
 	public void setPostType(Integer postType) {
 		this.postType = postType;
+	}
+
+	@Override
+	public String toString() {
+		return "PersonDTO{" +
+			"nurseId=" + nurseId +
+			", postType=" + postType +
+			", expectationId=" + expectationId +
+			", priority=" + priority +
+			", type=" + type +
+			'}';
 	}
 }

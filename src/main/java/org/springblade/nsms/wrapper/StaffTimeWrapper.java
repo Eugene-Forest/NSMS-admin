@@ -19,6 +19,7 @@ import lombok.AllArgsConstructor;
 import org.springblade.core.mp.support.BaseEntityWrapper;
 import org.springblade.core.tool.utils.BeanUtil;
 import org.springblade.nsms.entity.StaffTime;
+import org.springblade.nsms.tools.Constant;
 import org.springblade.nsms.vo.StaffTimeVO;
 
 /**
@@ -36,7 +37,11 @@ public class StaffTimeWrapper extends BaseEntityWrapper<StaffTime, StaffTimeVO> 
 	@Override
 	public StaffTimeVO entityVO(StaffTime staffTime) {
 		StaffTimeVO staffTimeVO = BeanUtil.copy(staffTime, StaffTimeVO.class);
-
+		//todo 继续包装
+		if (staffTime.getCategory().equals(Constant.SHIFT_TYPE_OF_NIGHT)){
+			staffTimeVO.setColor("#483D8B");
+		}
+		staffTimeVO.setDate(staffTime.getShiftDate());
 		return staffTimeVO;
 	}
 

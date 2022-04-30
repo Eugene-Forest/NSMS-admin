@@ -20,6 +20,8 @@ import org.springblade.nsms.entity.StaffTime;
 import org.springblade.nsms.vo.StaffTimeVO;
 import org.springblade.rewrite.FoundationService;
 
+import java.util.List;
+
 /**
  * 人员安排表，排班表 服务类
  *
@@ -37,4 +39,5 @@ public interface IStaffTimeService extends FoundationService<StaffTime> {
 	 */
 	IPage<StaffTimeVO> selectStaffTimePage(IPage<StaffTimeVO> page, StaffTimeVO staffTime);
 
+	List<StaffTimeVO> calendar(String date);
 }

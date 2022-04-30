@@ -69,7 +69,7 @@
 
 
     <select id="selectAllBaseNurseFromSampDept" resultType="org.springblade.nsms.dto.NurseInfoDTO">
-        SELECT A.id,B.category from
+        SELECT A.id,B.category,A.name from
             (select * from com_nurse_info
              where is_deleted=0 and tenant_id=#{tenantId} and department=#{deptId} and working_condition=1) as A
                 LEFT JOIN

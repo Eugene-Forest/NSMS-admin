@@ -15,26 +15,30 @@
  */
 package org.springblade.nsms.controller;
 
-import io.swagger.annotations.Api;
-
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
-import javax.validation.Valid;
-
+import org.springblade.core.boot.ctrl.BladeController;
 import org.springblade.core.mp.support.Condition;
 import org.springblade.core.mp.support.Query;
 import org.springblade.core.tool.api.R;
+import org.springblade.core.tool.utils.DateUtil;
 import org.springblade.core.tool.utils.Func;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.RequestParam;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springblade.nsms.entity.StaffTime;
+import org.springblade.nsms.service.IStaffTimeService;
+import org.springblade.nsms.tools.ServiceImplUtil;
 import org.springblade.nsms.vo.StaffTimeVO;
 import org.springblade.nsms.wrapper.StaffTimeWrapper;
-import org.springblade.nsms.service.IStaffTimeService;
-import org.springblade.core.boot.ctrl.BladeController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
 
 /**
  * 人员安排表，排班表 控制器
@@ -114,7 +118,7 @@ public class StaffTimeController extends BladeController {
 		return R.status(staffTimeService.saveOrUpdate(staffTime));
 	}
 
-	
+
 	/**
 	 * 删除 人员安排表，排班表
 	 */
@@ -125,5 +129,15 @@ public class StaffTimeController extends BladeController {
 		return R.status(staffTimeService.deleteLogic(Func.toLongList(ids)));
 	}
 
-	
+
+	@GetMapping("/calender")
+	@ApiOperationSupport(order = 8)
+	@ApiOperation(value = "获取日历显示的排班数据", notes = "传入staffTime")
+	public R calender(@RequestParam String date) {
+
+		return R.data(staffTimeService.calendar(date));
+	}
+
+
+
 }

@@ -16,6 +16,7 @@
 package org.springblade.nsms.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import org.springblade.nsms.dto.ScheduleTable;
 import org.springblade.nsms.entity.SchedulingReference;
 import org.springblade.nsms.vo.SchedulingReferenceVO;
 import org.springblade.rewrite.FoundationService;
@@ -65,5 +66,5 @@ public interface ISchedulingReferenceService extends FoundationService<Schedulin
 	 * @param schedulingReferenceVO
 	 * @return
 	 */
-	boolean scheduling(SchedulingReferenceVO schedulingReferenceVO);
+	ScheduleTable scheduling(SchedulingReferenceVO schedulingReferenceVO);
 }

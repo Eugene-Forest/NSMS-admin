@@ -6,6 +6,7 @@ import org.apache.xmlbeans.impl.jam.xml.TunnelledException;
 import org.springblade.core.tool.utils.DateUtil;
 import org.springblade.nsms.entity.SchedulingReference;
 import org.springblade.nsms.tools.Constant;
+import org.springblade.nsms.tools.SchedulingUtil;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.*;
@@ -234,7 +235,10 @@ public class ScheduleTable {
 
 			//确认职位
 			if (expectationDTO.getPostType().equals(Constant.POST_TYPE_NURSE)){
-				if (this.nightNurseNumber<this.shiftPlanDTOList.get(targetDate).getNightShiftNurses().size()){
+				if (this.nightNurseNumber<
+					SchedulingUtil.getPersonDTOsFromShiftPlanDTO(
+						this.shiftPlanDTOList.get(targetDate),
+						Constant.POST_TYPE_NURSE,"夜班").size()){
 					return true;
 				}else {
 					//人数满足，不需要添加
@@ -242,7 +246,10 @@ public class ScheduleTable {
 				}
 			}else if (expectationDTO.getPostType().equals(Constant.POST_TYPE_ASSISTANT))
 			{
-				if (this.nightAssistantNumber<this.shiftPlanDTOList.get(targetDate).getNightShiftAssistants().size()){
+				if (this.nightAssistantNumber<
+					SchedulingUtil.getPersonDTOsFromShiftPlanDTO(
+						this.shiftPlanDTOList.get(targetDate),
+						Constant.POST_TYPE_ASSISTANT,"夜班").size()){
 					return true;
 				}else {
 					//人数满足，不需要添加

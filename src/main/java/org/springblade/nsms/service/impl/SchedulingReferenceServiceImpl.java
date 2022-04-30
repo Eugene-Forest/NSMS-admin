@@ -34,6 +34,7 @@ import org.springblade.rewrite.FoundationServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.text.DateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -170,7 +171,7 @@ public class SchedulingReferenceServiceImpl extends FoundationServiceImpl<Schedu
 	 * @return
 	 */
 	@Override
-	public boolean scheduling(SchedulingReferenceVO schedulingReferenceVO) {
+	public ScheduleTable scheduling(SchedulingReferenceVO schedulingReferenceVO) {
 		//获取排班配置的源数据
 		SchedulingReference origin=baseMapper.selectById(
 			schedulingReferenceVO.getId()
@@ -197,11 +198,17 @@ public class SchedulingReferenceServiceImpl extends FoundationServiceImpl<Schedu
 
 		//创建排班姐结果对象
 		ScheduleTable scheduleTable=new ScheduleTable(schedulingReferenceVO);
+		//初始化排班结果框架
+		for (Date date = scheduleTable.getCloneStartDate(); date.compareTo(scheduleTable.getCloneEndDate())<=0; date=SchedulingUtil.nextDay(date)){
+			ShiftPlanDTO shiftPlanDTO=new ShiftPlanDTO();
+			scheduleTable.getShiftPlanDTOList().put(date, shiftPlanDTO);
+		}
 
-		//获取排班前一天的排班结果数据，并将其转换为 shiftPlanDTO
+
+			//获取排班前一天的排班结果数据，并将其转换为 shiftPlanDTO
 		List<PersonDTO> personDTOs=SpringUtil.getContext().getBean(StaffTimeServiceImpl.class).list(
 			Condition.getQueryWrapper(new StaffTime())
-				.eq("yearmonth", SchedulingUtil.lastDay(schedulingReferenceVO.getStartDate()))
+				.eq("shift_date", SchedulingUtil.lastDay(schedulingReferenceVO.getStartDate()))
 				.eq("create_dept", schedulingReferenceVO.getDepartmentId())
 		).stream()
 			.filter(x->!x.getCategory().equals(Constant.SHIFT_TYPE_OF_DAY))
@@ -213,9 +220,33 @@ public class SchedulingReferenceServiceImpl extends FoundationServiceImpl<Schedu
 		//执行排班算法
 		SchedulingUtil.scheduling(nurseDTOList, expectationDTOList,
 			scheduleTable,shiftPlanDTO);
+		//保存
+		StaffTimeServiceImpl staffTimeService=SpringUtil.getContext().getBean(StaffTimeServiceImpl.class);
 
+		for (Date date = scheduleTable.getCloneStartDate(); date.compareTo(scheduleTable.getCloneEndDate())<=0; date=SchedulingUtil.nextDay(date)){
+			ShiftPlanDTO shiftPlan=scheduleTable.getShiftPlanDTOList().get(date);
+			Date finalDate = date;
+			for (PersonDTO personDTO:shiftPlan.getDayShifts()){
+				StaffTime staffTime=new StaffTime();
+				staffTime.setReferenceSid(origin.getId());
+				staffTime.setNurseSid(personDTO.getNurseId());
+				staffTime.setCategory(Constant.SHIFT_TYPE_OF_DAY);
+				staffTime.setPostType(personDTO.getPostType());
+				staffTime.setShiftDate(finalDate);
+				staffTimeService.saveOrUpdate(staffTime);
+			}
+			for (PersonDTO personDTO:shiftPlan.getNightShifts()){
+				StaffTime staffTime=new StaffTime();
+				staffTime.setReferenceSid(origin.getId());
+				staffTime.setCategory(Constant.SHIFT_TYPE_OF_NIGHT);
+				staffTime.setNurseSid(personDTO.getNurseId());
+				staffTime.setPostType(personDTO.getPostType());
+				staffTime.setShiftDate(finalDate);
+				staffTimeService.saveOrUpdate(staffTime);
+			}
+		}
 
-		return false;
+		return scheduleTable;
 	}
 
 

@@ -14,10 +14,11 @@
         <result column="status" property="status"/>
         <result column="description" property="description"/>
         <result column="category" property="category"/>
-        <result column="yearMonth" property="yearmonth"/>
+        <result column="shift_date" property="shiftDate"/>
         <result column="nurse_sid" property="nurseSid"/>
         <result column="reference_sid" property="referenceSid"/>
         <result column="work_status" property="workStatus"/>
+        <result column="post_type" property="postType"/>
     </resultMap>
 
 

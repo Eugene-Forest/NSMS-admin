@@ -59,14 +59,19 @@ public class StaffTime extends FoundationEntity {
      * 工作时间的年月
      */
     @ApiModelProperty(value = "工作时间的年月")
-    @TableField("yearMonth")
+    @TableField("shift_date")
 	@DateTimeFormat(
 		pattern = "yyyy-MM-dd HH:mm:ss"
 	)
 	@JsonFormat(
 		pattern = "yyyy-MM-dd HH:mm:ss"
 	)
-	private Date yearmonth;
+	private Date shiftDate;
+
+	@ApiModelProperty(value = "护士列类别")
+	@TableField("post_type")
+	private Integer postType;
+
 	/**
      * 护士id
      */
@@ -74,7 +79,8 @@ public class StaffTime extends FoundationEntity {
 	@JsonSerialize(
 		using = ToStringSerializer.class
 	)
-    private Long nurseSid;
+	@TableField("nurse_sid")
+	private Long nurseSid;
     /**
      * 排班依据id
      */
@@ -82,12 +88,14 @@ public class StaffTime extends FoundationEntity {
 	@JsonSerialize(
 		using = ToStringSerializer.class
 	)
-    private Long referenceSid;
+	@TableField("reference_sid")
+	private Long referenceSid;
     /**
      * 工作状态；如请假
      */
     @ApiModelProperty(value = "工作状态；如请假")
-    private Integer workStatus;
+	@TableField("work_status")
+	private Integer workStatus;
 
 
 }

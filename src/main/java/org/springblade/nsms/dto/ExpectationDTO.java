@@ -36,6 +36,7 @@ public class ExpectationDTO extends Expectation {
 	private Integer postType;
 
 	public ExpectationDTO(Expectation expectation,Integer postType) {
+		this.setId(expectation.getId());
 		this.setPriority(expectation.getPriority());
 		this.setStartDate(expectation.getStartDate());
 		this.setEndDate(expectation.getEndDate());

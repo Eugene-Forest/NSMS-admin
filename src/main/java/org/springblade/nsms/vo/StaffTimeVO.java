@@ -15,10 +15,14 @@
  */
 package org.springblade.nsms.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springblade.nsms.entity.StaffTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import io.swagger.annotations.ApiModel;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
 
 /**
  * 人员安排表，排班表视图实体类
@@ -31,5 +35,21 @@ import io.swagger.annotations.ApiModel;
 @ApiModel(value = "StaffTimeVO对象", description = "人员安排表，排班表")
 public class StaffTimeVO extends StaffTime {
 	private static final long serialVersionUID = 1L;
+
+	//姓名
+	private String title;
+	//颜色
+	private String color;
+	//职位
+	private String post;
+	//日期
+	@DateTimeFormat(
+		pattern = "yyyy-MM-dd"
+	)
+	@JsonFormat(
+		pattern = "yyyy-MM-dd"
+	)
+	private Date date;
+
 
 }
