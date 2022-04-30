@@ -15,6 +15,8 @@
  */
 package org.springblade.nsms.vo;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import org.springblade.nsms.entity.NurseInfo;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -32,4 +34,9 @@ import io.swagger.annotations.ApiModel;
 public class NurseInfoVO extends NurseInfo {
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * 角色id
+	 */
+	@JsonSerialize(using = ToStringSerializer.class)
+	private Long roleId;
 }

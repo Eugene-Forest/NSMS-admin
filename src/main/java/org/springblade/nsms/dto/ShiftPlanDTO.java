@@ -325,4 +325,14 @@ public class ShiftPlanDTO implements Serializable {
 	public void nightShiftsAdd(List<PersonDTO> personDTOList){
 		nightShifts.addAll(personDTOList);
 	}
+
+	/**
+	 * 向日班安排中添加人员安排列表
+	 * @param personDTOList
+	 */
+	public void dayShiftsAdd(List<PersonDTO> personDTOList){
+		dayShifts.addAll(personDTOList);
+	}
+
+
 }

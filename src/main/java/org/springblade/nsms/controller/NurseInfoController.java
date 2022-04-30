@@ -103,7 +103,8 @@ public class NurseInfoController extends BladeController {
 	@ApiOperationSupport(order = 4)
 	@ApiOperation(value = "新增", notes = "传入nurseInfo")
 	public R save(@Valid @RequestBody NurseInfo nurseInfo) {
-		return R.status(nurseInfoService.save(nurseInfo));
+		//todo 关联用户表操作
+		return R.status(nurseInfoService.saveOrUpdate(nurseInfo));
 	}
 
 	/**
@@ -113,7 +114,8 @@ public class NurseInfoController extends BladeController {
 	@ApiOperationSupport(order = 5)
 	@ApiOperation(value = "修改", notes = "传入nurseInfo")
 	public R update(@Valid @RequestBody NurseInfo nurseInfo) {
-		return R.status(nurseInfoService.updateById(nurseInfo));
+		//todo 关联用户表操作
+		return R.status(nurseInfoService.saveOrUpdate(nurseInfo));
 	}
 
 	/**
@@ -122,8 +124,8 @@ public class NurseInfoController extends BladeController {
 	@PostMapping("/submit")
 	@ApiOperationSupport(order = 6)
 	@ApiOperation(value = "新增或修改", notes = "传入nurseInfo")
-	public R submit(@Valid @RequestBody NurseInfo nurseInfo) {
-		return R.status(nurseInfoService.saveOrUpdate(nurseInfo));
+	public R submit(@Valid @RequestBody NurseInfoVO nurseInfo) {
+		return R.status(nurseInfoService.saveOrUpdateWithUser(nurseInfo));
 	}
 
 
@@ -134,6 +136,7 @@ public class NurseInfoController extends BladeController {
 	@ApiOperationSupport(order = 7)
 	@ApiOperation(value = "逻辑删除", notes = "传入ids")
 	public R remove(@ApiParam(value = "主键集合", required = true) @RequestParam String ids) {
+		//todo 关联用户表操作
 		return R.status(nurseInfoService.deleteLogic(Func.toLongList(ids)));
 	}
 

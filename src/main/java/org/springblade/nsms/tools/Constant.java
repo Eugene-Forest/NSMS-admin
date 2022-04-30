@@ -8,6 +8,17 @@ package org.springblade.nsms.tools;
 public class Constant {
 
 	/**
+	 * 班次类别：日班
+	 */
+	public static Integer SHIFT_TYPE_OF_DAY=0;
+
+	/**
+	 * 班次类别：夜班
+	 */
+	public static Integer SHIFT_TYPE_OF_NIGHT=1;
+
+
+	/**
 	 * 【expectation_type】排班期望：夜班天数期望
 	 */
 	public static Integer EXPECTATION_TYPE_NIGHT_NUMBER=0;

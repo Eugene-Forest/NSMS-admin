@@ -34,4 +34,16 @@ public class ExpectationDTO extends Expectation {
 	 * 护理人员的职位类型
 	 */
 	private Integer postType;
+
+	public ExpectationDTO(Expectation expectation,Integer postType) {
+		this.setPriority(expectation.getPriority());
+		this.setStartDate(expectation.getStartDate());
+		this.setEndDate(expectation.getEndDate());
+		this.setNurseSid(expectation.getNurseSid());
+		this.setExpectationType(expectation.getExpectationType());
+		this.setDayNumber(expectation.getDayNumber());
+		this.setActualState(expectation.getActualState());
+		this.setReferenceSid(expectation.getReferenceSid());
+		this.postType = postType;
+	}
 }

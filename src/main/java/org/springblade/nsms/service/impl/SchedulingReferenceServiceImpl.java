@@ -18,15 +18,15 @@ package org.springblade.nsms.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springblade.core.mp.support.Condition;
 import org.springblade.core.tool.utils.SpringUtil;
-import org.springblade.nsms.dto.ExpectationDTO;
-import org.springblade.nsms.dto.NurseDTO;
-import org.springblade.nsms.dto.NurseInfoDTO;
+import org.springblade.nsms.dto.*;
 import org.springblade.nsms.entity.Expectation;
 import org.springblade.nsms.entity.NurseInfo;
 import org.springblade.nsms.entity.SchedulingReference;
+import org.springblade.nsms.entity.StaffTime;
 import org.springblade.nsms.mapper.SchedulingReferenceMapper;
 import org.springblade.nsms.service.ISchedulingReferenceService;
 import org.springblade.nsms.tools.Constant;
+import org.springblade.nsms.tools.SchedulingUtil;
 import org.springblade.nsms.tools.ServiceImplUtil;
 import org.springblade.nsms.vo.SchedulingReferenceVO;
 import org.springblade.nsms.wrapper.SchedulingReferenceWrapper;
@@ -34,7 +34,9 @@ import org.springblade.rewrite.FoundationServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.text.DateFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -180,16 +182,38 @@ public class SchedulingReferenceServiceImpl extends FoundationServiceImpl<Schedu
 		List<NurseDTO> nurseDTOList=
 			SpringUtil.getContext().getBean(NurseInfoServiceImpl.class).selectAllBaseNurseFromSampDept()
 				.stream().map(x-> new NurseDTO(x.getId(),x.getCategory())).collect(Collectors.toList());
-		List<Expectation> expectationDTOList=
+		Map<Long,Integer> nursesPostTypeMap=new HashMap<>();
+		nurseDTOList.forEach(x->{
+			nursesPostTypeMap.put(x.getNurseId(),x.getPostType());
+		});
+		List<ExpectationDTO> expectationDTOList=
 			SpringUtil.getContext().getBean(ExpectationServiceImpl.class).list(
 				Condition.getQueryWrapper(new Expectation())
 					.eq("tenant_id", ServiceImplUtil.getUserTenantId())
 					.eq("create_dept", ServiceImplUtil.getNurseDeptFromUser())
 					.eq("is_deleted", 0)
 					.eq("reference_sid", origin.getId())
-			);
+			).stream().map(x->new ExpectationDTO(x,nursesPostTypeMap.get(x.getNurseSid()))).collect(Collectors.toList());
 
 		//创建排班姐结果对象
+		ScheduleTable scheduleTable=new ScheduleTable(schedulingReferenceVO);
+
+		//获取排班前一天的排班结果数据，并将其转换为 shiftPlanDTO
+		List<PersonDTO> personDTOs=SpringUtil.getContext().getBean(StaffTimeServiceImpl.class).list(
+			Condition.getQueryWrapper(new StaffTime())
+				.eq("yearmonth", SchedulingUtil.lastDay(schedulingReferenceVO.getStartDate()))
+				.eq("create_dept", schedulingReferenceVO.getDepartmentId())
+		).stream()
+			.filter(x->!x.getCategory().equals(Constant.SHIFT_TYPE_OF_DAY))
+			.map(x->new PersonDTO(x.getNurseSid(),x.getCategory()))
+			.collect(Collectors.toList());
+		ShiftPlanDTO shiftPlanDTO=new ShiftPlanDTO();
+		shiftPlanDTO.nightShiftsAdd(personDTOs);
+
+		//执行排班算法
+		SchedulingUtil.scheduling(nurseDTOList, expectationDTOList,
+			scheduleTable,shiftPlanDTO);
+
 
 		return false;
 	}

@@ -43,6 +43,20 @@ public interface INurseInfoService extends FoundationService<NurseInfo> {
 
 
 	/**
+	 * 对护士信息进行新加或更改操作时，同时对用户信息进行操作
+	 * @param nurseInfo
+	 * @return
+	 */
+	boolean saveOrUpdateWithUser(NurseInfoVO nurseInfo);
+
+	/**
+	 * 对护士信息进行删除操作时，同时对用户信息进行操作
+	 * @param nurseInfo
+	 * @return
+	 */
+	boolean deleteWithUser(NurseInfo nurseInfo);
+
+	/**
 	 * 通过用户id获取对应的护士信息
 	 */
 	NurseInfo getNurseInfoByUserId(String userId);
