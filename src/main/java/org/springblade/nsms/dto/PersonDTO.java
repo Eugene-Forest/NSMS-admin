@@ -42,6 +42,12 @@ public class PersonDTO {
 		this.postType = postType;
 	}
 
+	public PersonDTO(final Long nurseId,final Integer shiftType,final Integer postType) {
+		this.nurseId = nurseId;
+		this.postType = postType;
+		this.type=shiftType;
+	}
+
 	public PersonDTO(final ExpectationDTO expectationDTO) {
 		this.nurseId = expectationDTO.getNurseSid();
 		this.postType = expectationDTO.getPostType();

@@ -66,5 +66,5 @@ public interface ISchedulingReferenceService extends FoundationService<Schedulin
 	 * @param schedulingReferenceVO
 	 * @return
 	 */
-	ScheduleTable scheduling(SchedulingReferenceVO schedulingReferenceVO);
+	boolean scheduling(SchedulingReferenceVO schedulingReferenceVO);
 }

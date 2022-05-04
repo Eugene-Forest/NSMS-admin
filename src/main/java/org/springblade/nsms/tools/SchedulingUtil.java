@@ -5,10 +5,7 @@ import org.springblade.nsms.dto.*;
 import org.springblade.nsms.entity.Expectation;
 import org.springblade.nsms.entity.SchedulingReference;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -47,7 +44,7 @@ public class SchedulingUtil {
 	 */
 
 
-	public static boolean scheduling(final List<NurseDTO> nurses,
+	public static boolean scheduling(List<NurseDTO> nurses,
 									 final List<ExpectationDTO> expectationDTOS,
 									 ScheduleTable scheduleTable,
 									 final ShiftPlanDTO lastSchedule){
@@ -60,13 +57,17 @@ public class SchedulingUtil {
 				y->y.getNurseSid().equals(x.getNurseId())
 			).collect(Collectors.toList());
 			//完成某护理人员的期望注入
-			dateShiftExpectationScheduling(someoneExpectations, scheduleTable);
-			dayNumberExpectationScheduling(someoneExpectations, scheduleTable);
-			nightNumberExpectationScheduling(someoneExpectations, scheduleTable);
+			dateShiftExpectationScheduling(someoneExpectations, scheduleTable,nurses);
+			dayNumberExpectationScheduling(someoneExpectations, scheduleTable,nurses);
+			nightNumberExpectationScheduling(someoneExpectations, scheduleTable,nurses);
 		});
 		//满足最小的排班人数规模的要求下的最大人员安排实现
 		boolean flag=minRuleScheduling(scheduleTable, nurses, lastSchedule);
-		return false;
+
+		//统计信息
+
+
+		return flag;
 	}
 
 
@@ -77,7 +78,7 @@ public class SchedulingUtil {
 	 * @param schedulingReference 目标排班配置表
 	 * @return
 	 */
-	public static boolean nurseNumberScaleCheck(List<NurseDTO> nurses,
+	public static boolean nurseNumberScaleCheck(final List<NurseDTO> nurses,
 												SchedulingReference schedulingReference){
 		//排班最小规模的计算规则：假设日班护士和助手的最小人数分别为：a,b；夜班的分别为c,d；
 		//则满足排班前置规则【1】的情况下的最小规模护士助手人数为 a+b+2*(c+d)
@@ -107,7 +108,8 @@ public class SchedulingUtil {
 	 */
 	public static void dateShiftExpectationScheduling(
 		final List<ExpectationDTO> expectationDTOS,
-		ScheduleTable scheduleTable
+		ScheduleTable scheduleTable,
+		List<NurseDTO> nurses
 	){
 		//日期期望注入；只要保证符合期望标准，那么就可以直接注入
 
@@ -115,14 +117,14 @@ public class SchedulingUtil {
 			if (expectationDTO.getExpectationType().equals(Constant.EXPECTATION_TYPE_VACATION)){
 				//假期期望需要单独存储
 				for (Date date=expectationDTO.getStartDate();date.compareTo(expectationDTO.getEndDate())<=0;date=nextDay(date)){
-					scheduleTable.getShiftPlanDTOList().get(date).addVacationExpectation(expectationDTO);
+					scheduleTable.getShiftPlanDTOList().get(date).addVacationExpectation(expectationDTO,nurses);
 				}
 			}else if (
 				expectationDTO.getExpectationType().equals(Constant.EXPECTATION_TYPE_NIGHT_SHIFT)
 				|| expectationDTO.getExpectationType().equals(Constant.EXPECTATION_TYPE_DAY_SHIFT)
 			){
 				for (Date date=expectationDTO.getStartDate();date.compareTo(expectationDTO.getEndDate())<=0;date=nextDay(date)){
-					scheduleTable.getShiftPlanDTOList().get(date).addShift(expectationDTO);
+					scheduleTable.getShiftPlanDTOList().get(date).addShift(expectationDTO,nurses);
 				}
 			}
 		}
@@ -138,7 +140,8 @@ public class SchedulingUtil {
 	 */
 	public static void dayNumberExpectationScheduling(
 		final List<ExpectationDTO> expectations,
-		ScheduleTable scheduleTable
+		ScheduleTable scheduleTable,
+		List<NurseDTO> nurses
 	){
 		List<ExpectationDTO> dayNumberExpectations=expectations.stream().filter(
 			x->x.getExpectationType().equals(Constant.EXPECTATION_TYPE_DAY_NUMBER)
@@ -184,7 +187,7 @@ public class SchedulingUtil {
 			if (!allDateShift.contains(date)){
 				if (remainNumber>0){
 					//如果天数期望还有剩余，且还存在可安排的日期，则向其添加
-					scheduleTable.getShiftPlanDTOList().get(date).addShift(dayNumberExpectations.get(0));
+					scheduleTable.getShiftPlanDTOList().get(date).addShift(dayNumberExpectations.get(0),nurses);
 					remainNumber=remainNumber-1;
 				}else {
 					break;
@@ -200,7 +203,8 @@ public class SchedulingUtil {
 	 */
 	public static void nightNumberExpectationScheduling(
 		final List<ExpectationDTO> expectations,
-		ScheduleTable scheduleTable
+		ScheduleTable scheduleTable,
+		List<NurseDTO> nurses
 	){
 		List<ExpectationDTO> nightNumberExpectations=expectations.stream().filter(
 			x->x.getExpectationType().equals(Constant.EXPECTATION_TYPE_NIGHT_NUMBER)
@@ -246,7 +250,7 @@ public class SchedulingUtil {
 			if (!allDateShift.contains(date)){
 				if (remainNumber>0){
 					//如果天数期望还有剩余，且还存在可安排的日期，则向其添加
-					scheduleTable.getShiftPlanDTOList().get(date).addShift(nightNumberExpectations.get(0));
+					scheduleTable.getShiftPlanDTOList().get(date).addShift(nightNumberExpectations.get(0),nurses);
 					remainNumber=remainNumber-1;
 				}else {
 					break;
@@ -262,8 +266,8 @@ public class SchedulingUtil {
 	 */
 	public static boolean minRuleScheduling(
 		ScheduleTable scheduleTable,
-		final List<NurseDTO> personDTOList,
-		final ShiftPlanDTO lastSchedule
+		List<NurseDTO> personDTOList,
+		ShiftPlanDTO lastSchedule
 	){
 		boolean flag=true;
 		//完成最小规则注入,判断夜班是否满足要求，如果不满足则添加或移除
@@ -281,9 +285,13 @@ public class SchedulingUtil {
 
 			if (nurseDTOs.size()>scheduleTable.getNightNurseNumber()){
 				//如果护士夜班班次规模大于预计规模,进行期望优先级比较，同时这种情况下不需要考虑前一天的影响，我们默认认为班次日期期望优先级大于夜班后休息一天的规则
-				nurseDTOs=getPersonDTOsByPriority(nurseDTOs, scheduleTable.getNightNurseNumber());
-				shiftPlanDTO.nightShiftFilterByPostType(Constant.POST_TYPE_NURSE);
-				shiftPlanDTO.nightShiftsAdd(nurseDTOs);
+				List<PersonDTO> targetNurses=getPersonDTOsByPriority(nurseDTOs, scheduleTable.getNightNurseNumber());
+				//获取需要被移除的排班结果
+				nurseDTOs.removeAll(targetNurses);
+				//定向清除职位为 postType 的夜班安排
+				shiftPlanDTO.nightShiftFilterByPostType(nurseDTOs,personDTOList);
+				//将优先级最高的放入排班结果中
+//				shiftPlanDTO.nightShiftsAdd(nurseDTOs,personDTOList);
 			}else if (nurseDTOs.size()<scheduleTable.getNightNurseNumber()){
 				//如果小于，需要添加，这个时候，
 				// 我们要考虑在满足假期期望和当日排班禁忌表的情况下能否满足最小规模，
@@ -297,6 +305,7 @@ public class SchedulingUtil {
 				List<Long> tabooNurses;
 				//如果是排班第一天，那么需要通过排班前一天的夜班结果获取今日禁忌表
 				if (date.equals(scheduleTable.getCloneStartDate())){
+					//inhere
 					tabooNurses=getIdsFromShiftPlanDTO(
 						lastSchedule,Constant.POST_TYPE_NURSE,"夜班");
 				}else {
@@ -320,13 +329,13 @@ public class SchedulingUtil {
 					flag= false;
 				}
 			}
-			//如果助手夜班班次规模大于预计规模
 			if (assistantDTOs.size()>scheduleTable.getNightAssistantNumber()){
-				assistantDTOs=getPersonDTOsByPriority(assistantDTOs, scheduleTable.getNightAssistantNumber());
-				shiftPlanDTO.nightShiftFilterByPostType(Constant.POST_TYPE_ASSISTANT);
-				shiftPlanDTO.nightShiftsAdd(assistantDTOs);
+				//如果助手夜班班次规模大于预计规模
+				//todo 可优化为获取需要被清除的人
+				List<PersonDTO> targetAssistants=getPersonDTOsByPriority(assistantDTOs, scheduleTable.getNightAssistantNumber());
+				assistantDTOs.removeAll(targetAssistants);
+				shiftPlanDTO.nightShiftFilterByPostType(assistantDTOs,personDTOList);
 			}else if (assistantDTOs.size()<scheduleTable.getNightAssistantNumber()){
-
 				//获取假期期望和生成当日排班禁忌表
 				List<Long> vacationAssistants=getIdsFromShiftPlanDTO(
 					shiftPlanDTO,Constant.POST_TYPE_ASSISTANT,"假期");
@@ -419,6 +428,7 @@ public class SchedulingUtil {
 			//日班在最大注入的情况下尽可能实现假期期望、禁忌表的情况下的闲置人员日班安排
 //			如果日班连最小注入都无法实现，那么说明这就是它的最大注入
 			if(assistantDTOs.size()>=scheduleTable.getDayAssistantNumber()){
+				//todo 日班人数·限制
 				//如果助手日班列表人数大于等于目标规模，则说明人数充裕满足最小要求，直接进行最大日班人数填充
 				//将所有护理人员中去除掉 已经是夜班的，已经是日班的，请假的，禁忌表中的
 				//然后判断剩余的人是否能满足要求，如果满足即完成
@@ -441,9 +451,10 @@ public class SchedulingUtil {
 				).collect(Collectors.toList());
 				//如果还有剩余的闲置人员，则全部加入日班安排表中
 				remainPersonDTOs.forEach(x->{
-					shiftPlanDTO.addDayShift(new PersonDTO(x,Constant.POST_TYPE_ASSISTANT));
+					shiftPlanDTO.addDayShift(new PersonDTO(x,Constant.POST_TYPE_ASSISTANT),personDTOList);
 				});
 				flag=flag&&true;
+
 			}else {
 				//如果助手日班列表人数小于目标规模，则说明人数不足，需要进行最小要求注入
 				if (
@@ -484,7 +495,7 @@ public class SchedulingUtil {
 					).collect(Collectors.toList());
 				//如果还有剩余的闲置人员，则全部加入日班安排表中
 				remainPersonDTOs.forEach(x->{
-					shiftPlanDTO.addDayShift(new PersonDTO(x,Constant.POST_TYPE_NURSE));
+					shiftPlanDTO.addDayShift(new PersonDTO(x,Constant.POST_TYPE_NURSE),personDTOList);
 				});
 				flag=flag&&true;
 			}else {
@@ -521,7 +532,7 @@ public class SchedulingUtil {
 	 */
 	public static boolean dayShiftMinOrMaxInjection(
 		ShiftPlanDTO shiftPlanDTO,
-		final List<NurseDTO> allPersonDTOList,
+		List<NurseDTO> allPersonDTOList,
 		final List<Long> tabooPersonDTOList,
 		final List<Long> vacationPersonDTOList,
 		int numberOfSetting,
@@ -571,15 +582,32 @@ public class SchedulingUtil {
 		}
 		if (remainPersonDTOs.size()>=numberOfSetting){
 			//人员充足，全部加入以实现最大日班人数填充
-			remainPersonDTOs.forEach(x->{
-				shiftPlanDTO.addDayShift(new PersonDTO(x,postType));
+
+			//先将剩余队列中的根据夜班天数由大到小排序，然后进行顺序加入排班计划
+			//todo 如果需要限制日班个数，在此限制
+			List<NurseDTO> remainList=allPersonDTOList.stream().filter(
+				x->{
+					if (remainPersonDTOs.contains(x.getNurseId())){
+						return true;
+					}else {
+						return false;
+					}
+				}
+			).collect(Collectors.toList());
+			//排序
+			remainList=remainList.stream()
+				.sorted(NurseDTO::compareTo)
+				.collect(Collectors.toList());
+
+			remainList.forEach(x->{
+				shiftPlanDTO.addDayShift(new PersonDTO(x.getNurseId(),postType),allPersonDTOList);
 			});
 			return true;
 		}else {
 			//剩余人员不足/逐步添加
 			//首先将所有剩余人员加入
 			for (Long remainPersonDTO : remainPersonDTOs) {
-				shiftPlanDTO.addNightShift(new PersonDTO(remainPersonDTO,postType));
+				shiftPlanDTO.addNightShift(new PersonDTO(remainPersonDTO,postType),allPersonDTOList);
 				numberOfSetting=numberOfSetting-1;
 				if (numberOfSetting<=0){
 					return true;
@@ -589,7 +617,7 @@ public class SchedulingUtil {
 			//todo 如果没有完成，则根据假期期望优先级先后忽略看是否可以实现
 			if (vacationPersonDTOList!=null){
 				for (Long vacationPersonDTO : vacationPersonDTOList) {
-					shiftPlanDTO.addNightShift(new PersonDTO(vacationPersonDTO,postType));
+					shiftPlanDTO.addNightShift(new PersonDTO(vacationPersonDTO,postType),allPersonDTOList);
 					numberOfSetting=numberOfSetting-1;
 					if (numberOfSetting<=0){
 						return true;
@@ -599,7 +627,7 @@ public class SchedulingUtil {
 			// 如果还不能，从当日排班禁忌表中取人；
 			if (tabooPersonDTOList!=null){
 				for (Long tabooPersonDTO : tabooPersonDTOList) {
-					shiftPlanDTO.addNightShift(new PersonDTO(tabooPersonDTO,postType));
+					shiftPlanDTO.addNightShift(new PersonDTO(tabooPersonDTO,postType),allPersonDTOList);
 					numberOfSetting=numberOfSetting-1;
 					if (numberOfSetting<=0){
 						return true;
@@ -623,7 +651,7 @@ public class SchedulingUtil {
 	 */
 	public static boolean nightShiftMinInjection(
 		ShiftPlanDTO shiftPlanDTO,
-		final List<NurseDTO> allPersonDTOList,
+		List<NurseDTO> allPersonDTOList,
 		final List<Long> tabooPersonDTOList,
 		final List<Long> vacationPersonDTOList,
 		int numberOfSetting,
@@ -672,10 +700,25 @@ public class SchedulingUtil {
 			numberOfSetting=numberOfSetting-nightShiftPersonDTOList.size();
 		}
 		if (remainPersonDTOs.size()>=numberOfSetting){
-			//人员充足，遍历加入
-			//todo 可优化
-			for (Long remainPersonDTO : remainPersonDTOs) {
-				shiftPlanDTO.addNightShift(new PersonDTO(remainPersonDTO,postType));
+			//人员充足，遍历加入,需要考虑到排班的夜班数
+			//先将剩余队列中的根据夜班天数由大到小排序，然后进行顺序加入排班计划
+			//从全体人员列表中获取
+			List<NurseDTO> remainList=allPersonDTOList.stream().filter(
+				x->{
+					if (remainPersonDTOs.contains(x.getNurseId())){
+						return true;
+					}else {
+						return false;
+					}
+				}
+			).collect(Collectors.toList());
+			//排序
+			remainList=remainList.stream()
+				.sorted(NurseDTO::compareTo)
+				.collect(Collectors.toList());
+
+			for (NurseDTO remainPersonDTO : remainList) {
+				shiftPlanDTO.addNightShift(new PersonDTO(remainPersonDTO.getNurseId(),postType),allPersonDTOList);
 				numberOfSetting=numberOfSetting-1;
 				if (numberOfSetting<=0){
 					break;
@@ -686,7 +729,7 @@ public class SchedulingUtil {
 			//剩余人员不足/逐步添加
 			//首先将所有剩余人员加入
 			for (Long remainPersonDTO : remainPersonDTOs) {
-				shiftPlanDTO.addNightShift(new PersonDTO(remainPersonDTO,postType));
+				shiftPlanDTO.addNightShift(new PersonDTO(remainPersonDTO,postType),allPersonDTOList);
 				numberOfSetting=numberOfSetting-1;
 				if (numberOfSetting<=0){
 					return true;
@@ -696,7 +739,7 @@ public class SchedulingUtil {
 			//todo 如果没有完成，则根据假期期望优先级先后忽略看是否可以实现
 			if(vacationPersonDTOList!=null){
 				for (Long vacationPersonDTO : vacationPersonDTOList) {
-					shiftPlanDTO.addNightShift(new PersonDTO(vacationPersonDTO,postType));
+					shiftPlanDTO.addNightShift(new PersonDTO(vacationPersonDTO,postType),allPersonDTOList);
 					numberOfSetting=numberOfSetting-1;
 					if (numberOfSetting<=0){
 						return true;
@@ -706,7 +749,7 @@ public class SchedulingUtil {
 			// 如果还不能，从当日排班禁忌表中取人；
 			if (tabooPersonDTOList!=null){
 				for (Long tabooPersonDTO : tabooPersonDTOList) {
-					shiftPlanDTO.addNightShift(new PersonDTO(tabooPersonDTO,postType));
+					shiftPlanDTO.addNightShift(new PersonDTO(tabooPersonDTO,postType),allPersonDTOList);
 					numberOfSetting=numberOfSetting-1;
 					if (numberOfSetting<=0){
 						return true;
@@ -793,44 +836,6 @@ public class SchedulingUtil {
 		});
 		return tabooDate.size();
 	}
-
-
-
-//	/**
-//	 * 遍历加入实现期望注入
-//	 * @param scheduleTable
-//	 * @param expectation
-//	 * @param lastSchedule
-//	 */
-//	public static void addTraversal(
-//		ScheduleTable scheduleTable,
-//		ExpectationDTO expectation,
-//		ShiftPlanDTO lastSchedule
-//	){
-//		//ps:对于期望注入中期望之间的相互影响默认没有，即各个期望之间是相互独立且互不影响的（需要在期望添加中实现相关的逻辑判断以实现）
-//		//只有在期望之间相互不影响的情况下，才能使得期望实现的时候可以不用考虑除了夜班期望的最大规模的外的条件
-//
-//		//对于日班、夜班的日期期望的实现，默认是遍历期望日期实现
-//		if (expectation.getExpectationType().equals(Constant.EXPECTATION_TYPE_DAY_SHIFT)){
-//			//对于日班日期期望，直接添加入即可
-//			//获取期望时间区间，并通过此事件区间的时间获取对应的排班表
-//			for (Date date=expectation.getStartDate();date.compareTo(expectation.getEndDate())<=0;nextDay(date)){
-//				scheduleTable.getShiftPlanDTOList().get(date).addDayShift(expectation);
-//			}
-//		}
-//		else if (expectation.getExpectationType().equals(Constant.EXPECTATION_TYPE_NIGHT_SHIFT)){
-//			//对于夜班日期期望，
-//			for (Date date=expectation.getStartDate();date.compareTo(expectation.getEndDate())<=0;nextDay(date)){
-//				scheduleTable.getShiftPlanDTOList().get(date).addNightShift(expectation);
-//			}
-//		}
-//		else if (expectation.getExpectationType().equals(Constant.EXPECTATION_TYPE_DAY_NUMBER) ||
-//			expectation.getExpectationType().equals(Constant.EXPECTATION_TYPE_NIGHT_NUMBER)){
-//			//展示将天数期望的实现定为遍历实现，加入前判断本日此人是否已经被安排
-//			//还要考虑假期期望
-//			//todo
-//		}
-//	}
 
 
 	/**
@@ -984,6 +989,7 @@ public class SchedulingUtil {
 		Integer postType,
 		String shiftType){
 		List<Long> ids=new ArrayList<>();
+		//inhere
 		List<PersonDTO> personDTOS=getPersonDTOsFromShiftPlanDTO(shiftPlanDTO, postType, shiftType);
 		if (personDTOS.size() != 0){
 			ids= personDTOS.stream().map(PersonDTO::getNurseId).collect(Collectors.toList());

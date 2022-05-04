@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 用来存储一天内的两班制排班结果的对象
@@ -52,8 +53,9 @@ public class ShiftPlanDTO implements Serializable {
 	}
 
 
-	public void addVacationExpectation(final ExpectationDTO expectation){
+	public void addVacationExpectation(final ExpectationDTO expectation,List<NurseDTO> nurseDTOList){
 		PersonDTO personDTO=new PersonDTO(expectation);
+		dealWithNumberOfShift(expectation, nurseDTOList);
 		this.vacationList.add(personDTO);
 	}
 
@@ -61,8 +63,9 @@ public class ShiftPlanDTO implements Serializable {
 	 * 通过期望添加日班安排
 	 * @param expectation
 	 */
-	public void addDayShift(final ExpectationDTO expectation){
+	public void addDayShift(final ExpectationDTO expectation,List<NurseDTO> nurseDTOList){
 		PersonDTO personDTO=new PersonDTO(expectation);
+		dealWithNumberOfShift(expectation, nurseDTOList);
 		this.dayShifts.add(personDTO);
 	}
 
@@ -70,8 +73,9 @@ public class ShiftPlanDTO implements Serializable {
 	 * 添加日班安排
 	 * @param person
 	 */
-	public void addDayShift(final PersonDTO person){
+	public void addDayShift(final PersonDTO person,List<NurseDTO> nurseDTOList){
 		PersonDTO personDTO=new PersonDTO(person);
+		dealWithNumberOfShift("日班",person.getNurseId(), nurseDTOList);
 		this.dayShifts.add(personDTO);
 	}
 
@@ -79,8 +83,10 @@ public class ShiftPlanDTO implements Serializable {
 	 * 通过期望添加夜班安排
 	 * @param expectation
 	 */
-	public void addNightShift(final ExpectationDTO expectation){
+	public void addNightShift(final ExpectationDTO expectation,List<NurseDTO> nurseDTOList){
 		PersonDTO personDTO=new PersonDTO(expectation);
+		dealWithNumberOfShift(expectation, nurseDTOList);
+
 		this.nightShifts.add(personDTO);
 	}
 
@@ -88,8 +94,9 @@ public class ShiftPlanDTO implements Serializable {
 	 * 添加夜班安排
 	 * @param person
 	 */
-	public void addNightShift(final PersonDTO person){
+	public void addNightShift(final PersonDTO person,List<NurseDTO> nurseDTOList){
 		PersonDTO personDTO=new PersonDTO(person);
+		dealWithNumberOfShift("夜班",person.getNurseId(), nurseDTOList);
 		this.nightShifts.add(personDTO);
 	}
 
@@ -97,15 +104,16 @@ public class ShiftPlanDTO implements Serializable {
 	 * 期望注入，直接添加入即可
 	 * @param expectation 期望
 	 */
-	public void addShift(final ExpectationDTO expectation){
+	public void addShift(final ExpectationDTO expectation,List<NurseDTO> nurseDTOList){
+
 		if (expectation.getExpectationType().equals(Constant.EXPECTATION_TYPE_DAY_SHIFT)
 		|| expectation.getExpectationType().equals(Constant.EXPECTATION_TYPE_DAY_NUMBER)) {
-			addDayShift(expectation);
+			addDayShift(expectation,nurseDTOList);
 		}
 		else if (expectation.getExpectationType().equals(Constant.EXPECTATION_TYPE_NIGHT_SHIFT)
 		||expectation.getExpectationType().equals(Constant.EXPECTATION_TYPE_NIGHT_NUMBER))
 		{
-			addNightShift(expectation);
+			addNightShift(expectation,nurseDTOList);
 		}
 
 	}
@@ -114,18 +122,32 @@ public class ShiftPlanDTO implements Serializable {
 	/**
 	 * 定向清除职位为 postType 的夜班安排
 	 */
-	public void nightShiftFilterByPostType(Integer postType){
+	public void nightShiftFilterByPostType(final List<PersonDTO> targetLists,List<NurseDTO> nurseDTOList){
 		List<PersonDTO> personDTOList=new ArrayList<>();
+		List<Long> targetIds=targetLists.stream().map(PersonDTO::getNurseId).collect(Collectors.toList());
 		nightShifts.forEach(x->{
-			if (!x.getPostType().equals(postType)){
+			if (targetIds.contains(x.getNurseId())){
 				personDTOList.add(x);
+				//同时减去排班夜班天数
+				reduceNumberOfShift("夜班",x.getNurseId(), nurseDTOList);
 			}
 		});
-		nightShifts=personDTOList;
+		nightShifts.removeAll(personDTOList);
 	}
 
 	/**
 	 * 向夜班安排中添加人员安排列表
+	 * @param personDTOList
+	 */
+	public void nightShiftsAdd(List<PersonDTO> personDTOList,List<NurseDTO> nurseDTOList){
+		nightShifts.addAll(personDTOList);
+		personDTOList.forEach(x->{
+			dealWithNumberOfShift("夜班",x.getNurseId(), nurseDTOList);
+		});
+	}
+
+	/**
+	 * 用来初始化排班前日禁忌表的方法
 	 * @param personDTOList
 	 */
 	public void nightShiftsAdd(List<PersonDTO> personDTOList){
@@ -133,257 +155,62 @@ public class ShiftPlanDTO implements Serializable {
 	}
 
 	/**
-	 * 向日班安排中添加人员安排列表
+	 * 用来初始化排班前日禁忌表的方法
 	 * @param personDTOList
 	 */
 	public void dayShiftsAdd(List<PersonDTO> personDTOList){
 		dayShifts.addAll(personDTOList);
 	}
 
-
-
 	/**
-	 * 获取假期护士id列表
-	 * @return
+	 * 向日班安排中添加人员安排列表
+	 * @param personDTOList
 	 */
-//	public List<Long> getVacationNurses(){
-//		if (vacationList.isEmpty()){
-//			return null;
-//		}else {
-//			List<Long> idsList=new ArrayList<>();
-//			vacationList.forEach(x->{
-//				if (x.getPostType().equals(Constant.POST_TYPE_NURSE)){
-//					idsList.add(x.getNurseId());
-//				}
-//			});
-//			return idsList;
-//		}
-//	}
-
-	/**
-	 * 获取假期护士安排表
-	 * @return
-	 */
-//	public List<PersonDTO> getVacationNurseDTOs(){
-//		if (vacationList.isEmpty()){
-//			return null;
-//		}else {
-//			List<PersonDTO> personDTOList=new ArrayList<>();
-//			vacationList.forEach(x->{
-//				if (x.getPostType().equals(Constant.POST_TYPE_NURSE)){
-//					personDTOList.add(x);
-//				}
-//			});
-//			return personDTOList;
-//		}
-//	}
-
-	/**
-	 * 获取假期助手id列表
-	 * @return
-	 */
-//	public List<Long> getVacationAssistants(){
-//		if (vacationList.isEmpty()){
-//			return null;
-//		}else {
-//			List<Long> idsList=new ArrayList<>();
-//			vacationList.forEach(x->{
-//				if (x.getPostType().equals(Constant.POST_TYPE_ASSISTANT)){
-//					idsList.add(x.getNurseId());
-//				}
-//			});
-//			return idsList;
-//		}
-//	}
-
-	/**
-	 * 获取假期助手安排表
-	 * @return
-	 */
-//	public List<PersonDTO> getVacationAssistantDTOs(){
-//		if (vacationList.isEmpty()){
-//			return null;
-//		}else {
-//			List<PersonDTO> personDTOList=new ArrayList<>();
-//			vacationList.forEach(x->{
-//				if (x.getPostType().equals(Constant.POST_TYPE_ASSISTANT)){
-//					personDTOList.add(x);
-//				}
-//			});
-//			return personDTOList;
-//		}
-//	}
-
-	/**
-	 * 获取日班护士id列表
-	 * @return
-	 */
-//	public List<Long> getDayShiftNurses(){
-//		if (this.dayShifts.isEmpty()){
-//			return null;
-//		}else {
-//			List<Long> idsList=new ArrayList<>();
-//			dayShifts.forEach(x->{
-//				if (x.getPostType().equals(Constant.POST_TYPE_NURSE)){
-//					idsList.add(x.getNurseId());
-//				}
-//			});
-//			return idsList;
-//		}
-//	}
-
-	/**
-	 * 获取日班护士安排表
-	 * @return
-	 */
-//	public List<PersonDTO> getDayShiftNurseDTOs(){
-//		if (this.dayShifts.isEmpty()){
-//			return null;
-//		}else {
-//			List<PersonDTO> personDTOList=new ArrayList<>();
-//			dayShifts.forEach(x->{
-//				if (x.getPostType().equals(Constant.POST_TYPE_NURSE)){
-//					personDTOList.add(x);
-//				}
-//			});
-//			return personDTOList;
-//		}
-//	}
-
-	/**
-	 * 获取夜班护士人数
-	 * @return
-	 */
-//	public int getNightShiftNursesNumber(){
-//		List<Long> nightShiftNurses=getNightShiftNurses();
-//		if (nightShiftNurses==null){
-//			return 0;
-//		}else {
-//			return nightShiftNurses.size();
-//		}
-//	}
-
-	/**
-	 * 获取夜班护士id列表
-	 * @return
-	 */
-//	public List<Long> getNightShiftNurses(){
-//		if (this.nightShifts.isEmpty()){
-//			return null;
-//		}else {
-//			List<Long> idsList=new ArrayList<>();
-//			nightShifts.forEach(x->{
-//				if (x.getPostType().equals(Constant.POST_TYPE_NURSE)){
-//					idsList.add(x.getNurseId());
-//				}
-//			});
-//			return idsList;
-//		}
-//	}
-
-	/**
-	 * 获取夜班护士安排表
-	 * @return
-	 */
-//	public List<PersonDTO> getNightShiftNurseDTOs(){
-//		if (this.nightShifts.isEmpty()){
-//			return null;
-//		}else {
-//			List<PersonDTO> personDTOList=new ArrayList<>();
-//			nightShifts.forEach(x->{
-//				if (x.getPostType().equals(Constant.POST_TYPE_NURSE)){
-//					personDTOList.add(x);
-//				}
-//			});
-//			return personDTOList;
-//		}
-//	}
+	public void dayShiftsAdd(List<PersonDTO> personDTOList,List<NurseDTO> nurseDTOList){
+		dayShifts.addAll(personDTOList);
+		personDTOList.forEach(x->{
+			dealWithNumberOfShift("日班",x.getNurseId(), nurseDTOList);
+		});
+	}
 
 
-	/**
-	 * 获取日班助手id列表
-	 * @return
-	 */
-//	public List<Long> getDayShiftAssistants(){
-//		if (this.dayShifts.isEmpty()){
-//			return null;
-//		}else {
-//			List<Long> idsList=new ArrayList<>();
-//			dayShifts.forEach(x->{
-//				if (x.getPostType().equals(Constant.POST_TYPE_ASSISTANT)){
-//					idsList.add(x.getNurseId());
-//				}
-//			});
-//			return idsList;
-//		}
-//	}
+	public void reduceNumberOfShift(String shiftType,Long nurseSid,List<NurseDTO> nurseDTOList){
+		nurseDTOList.forEach(x->{
+			if (x.getNurseId().equals(nurseSid)){
+				if ("日班".equals(shiftType)){
+					x.dayShiftNumberReduce();
+				}else if ("夜班".equals(shiftType)){
+					x.nightShiftNumberReduce();
+				}
+			}
+		});
+	}
+	public void dealWithNumberOfShift(String shiftType,Long nurseSid,List<NurseDTO> nurseDTOList){
+		nurseDTOList.forEach(x->{
+			if (x.getNurseId().equals(nurseSid)){
+				if ("日班".equals(shiftType)){
+					x.dayShiftNumberAdd();
+				}else if ("夜班".equals(shiftType)){
+					x.nightShiftNumberAdd();
+				}
+			}
+		});
+	}
 
-	/**
-	 * 获取日班助手安排表
-	 * @return
-	 */
-//	public List<PersonDTO> getDayShiftAssistantDTOs(){
-//		if (this.dayShifts.isEmpty()){
-//			return null;
-//		}else {
-//			List<PersonDTO> personDTOList=new ArrayList<>();
-//			dayShifts.forEach(x->{
-//				if (x.getPostType().equals(Constant.POST_TYPE_ASSISTANT)){
-//					personDTOList.add(x);
-//				}
-//			});
-//			return personDTOList;
-//		}
-//	}
+	public void dealWithNumberOfShift(ExpectationDTO expectation,List<NurseDTO> nurseDTOList){
+		nurseDTOList.forEach(x->{
+			if (x.getNurseId().equals(expectation.getNurseSid())){
+				if (expectation.getExpectationType().equals(Constant.EXPECTATION_TYPE_NIGHT_SHIFT)
+					|| expectation.getExpectationType().equals(Constant.EXPECTATION_TYPE_NIGHT_NUMBER)){
+					x.nightShiftNumberAdd();
+				}else if (expectation.getExpectationType().equals(Constant.EXPECTATION_TYPE_DAY_SHIFT)
+					|| expectation.getExpectationType().equals(Constant.EXPECTATION_TYPE_DAY_NUMBER)){
+					x.dayShiftNumberAdd();
+				}else if (expectation.getExpectationType().equals(Constant.EXPECTATION_TYPE_VACATION)){
+					x.vacationDayNumberAdd();
+				}
+			}
+		});
+	}
 
-	/**
-	 * 获取夜班助手数
-	 * @return
-	 */
-//	public int getNightShiftAssistantsNumber(){
-//		List<Long> nightShiftAssistantIds=getNightShiftAssistants();
-//		if (nightShiftAssistantIds==null){
-//			return 0;
-//		}else {
-//			return  nightShiftAssistantIds.size();
-//		}
-//	}
-
-	/**
-	 * 获取夜班助手id列表
-	 * @return
-	 */
-//	public List<Long> getNightShiftAssistants(){
-//		if (this.nightShifts.isEmpty()){
-//			return null;
-//		}else {
-//			List<Long> idsList=new ArrayList<>();
-//
-//			//使用流进行过滤可能会出现流中断的情况，这是因为被过滤后的不存在其余数据流
-//			for (int i=0;i<nightShifts.size();i++){
-//				if (nightShifts.get(i).getPostType().equals(Constant.POST_TYPE_ASSISTANT)){
-//					idsList.add(nightShifts.get(i).getNurseId());
-//				}
-//			}
-//			return idsList;
-//		}
-//	}
-
-	/**
-	 * 获取夜班助手安排表
-	 * @return
-	 */
-//	public List<PersonDTO> getNightShiftAssistantDTOs(){
-//		if (this.nightShifts.isEmpty()){
-//			return null;
-//		}else {
-//			List<PersonDTO> personDTOList=new ArrayList<>();
-//			nightShifts.forEach(x->{
-//				if (x.getPostType().equals(Constant.POST_TYPE_ASSISTANT)){
-//					personDTOList.add(x);
-//				}
-//			});
-//			return personDTOList;
-//		}
-//	}
 }

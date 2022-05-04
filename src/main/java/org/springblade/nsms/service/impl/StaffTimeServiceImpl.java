@@ -21,6 +21,7 @@ import org.springblade.core.tool.utils.SpringUtil;
 import org.springblade.nsms.dto.NurseInfoDTO;
 import org.springblade.nsms.entity.NurseInfo;
 import org.springblade.nsms.entity.StaffTime;
+import org.springblade.nsms.tools.Constant;
 import org.springblade.nsms.tools.ServiceImplUtil;
 import org.springblade.nsms.vo.NurseInfoVO;
 import org.springblade.nsms.vo.StaffTimeVO;
@@ -78,7 +79,11 @@ public class StaffTimeServiceImpl extends FoundationServiceImpl<StaffTimeMapper,
 		List<StaffTimeVO> staffTimeVOList=new ArrayList<>();
 		for (StaffTime staffTime:staffTimeList){
 			StaffTimeVO staffTimeVO=StaffTimeWrapper.build().entityVO(staffTime);
-			staffTimeVO.setTitle(nurseInfoMap.get(staffTime.getNurseSid()));
+			if (staffTime.getPostType().equals(Constant.POST_TYPE_NURSE)){
+				staffTimeVO.setTitle(nurseInfoMap.get(staffTime.getNurseSid())+"[护士]");
+			}else if (staffTime.getPostType().equals(Constant.POST_TYPE_ASSISTANT)){
+				staffTimeVO.setTitle(nurseInfoMap.get(staffTime.getNurseSid())+"[助手]");
+			}
 			staffTimeVOList.add(staffTimeVO);
 		}
 		return staffTimeVOList;
