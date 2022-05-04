@@ -21,6 +21,11 @@ public class ScheduleTable {
 	private Map<Date,ShiftPlanDTO> shiftPlanDTOList;
 
 	/**
+	 *
+	 */
+	private List<NurseDTO> allPersonBaseInfo;
+
+	/**
 	 * 排班期间的假期天数
 	 */
 	@ApiModelProperty(value = "排班期间的假期天数")

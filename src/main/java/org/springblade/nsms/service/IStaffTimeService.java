@@ -39,5 +39,7 @@ public interface IStaffTimeService extends FoundationService<StaffTime> {
 	 */
 	IPage<StaffTimeVO> selectStaffTimePage(IPage<StaffTimeVO> page, StaffTimeVO staffTime);
 
-	List<StaffTimeVO> calendar(String date);
+//	List<StaffTimeVO> calendar(String startDate,String endDate);
+
+	List<StaffTimeVO> calendar(String today);
 }
