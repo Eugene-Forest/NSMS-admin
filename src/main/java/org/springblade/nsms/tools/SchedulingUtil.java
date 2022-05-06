@@ -624,16 +624,16 @@ public class SchedulingUtil {
 					}
 				}
 			}
-			// 如果还不能，从当日排班禁忌表中取人；
-			if (tabooPersonDTOList!=null){
-				for (Long tabooPersonDTO : tabooPersonDTOList) {
-					shiftPlanDTO.addNightShift(new PersonDTO(tabooPersonDTO,postType),allPersonDTOList);
-					numberOfSetting=numberOfSetting-1;
-					if (numberOfSetting<=0){
-						return true;
-					}
-				}
-			}
+			// 如果还不能，从当日排班禁忌表中取人；但是默认是不能的
+//			if (tabooPersonDTOList!=null){
+//				for (Long tabooPersonDTO : tabooPersonDTOList) {
+//					shiftPlanDTO.addNightShift(new PersonDTO(tabooPersonDTO,postType),allPersonDTOList);
+//					numberOfSetting=numberOfSetting-1;
+//					if (numberOfSetting<=0){
+//						return true;
+//					}
+//				}
+//			}
 			// 如果还不能，则说明不能满足，标记此次排班失败
 			return false;
 		}
@@ -746,16 +746,16 @@ public class SchedulingUtil {
 					}
 				}
 			}
-			// 如果还不能，从当日排班禁忌表中取人；
-			if (tabooPersonDTOList!=null){
-				for (Long tabooPersonDTO : tabooPersonDTOList) {
-					shiftPlanDTO.addNightShift(new PersonDTO(tabooPersonDTO,postType),allPersonDTOList);
-					numberOfSetting=numberOfSetting-1;
-					if (numberOfSetting<=0){
-						return true;
-					}
-				}
-			}
+			// 如果还不能，从当日排班禁忌表中取人；但是默认是不能的。
+//			if (tabooPersonDTOList!=null){
+//				for (Long tabooPersonDTO : tabooPersonDTOList) {
+//					shiftPlanDTO.addNightShift(new PersonDTO(tabooPersonDTO,postType),allPersonDTOList);
+//					numberOfSetting=numberOfSetting-1;
+//					if (numberOfSetting<=0){
+//						return true;
+//					}
+//				}
+//			}
 			// 如果还不能，则说明不能满足，标记此次排班失败
 			return false;
 		}
