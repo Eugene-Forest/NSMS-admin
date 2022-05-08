@@ -3,10 +3,13 @@ package org.springblade.nsms.tools;
 import lombok.SneakyThrows;
 import org.apache.poi.ss.formula.functions.T;
 import org.springblade.common.tool.SpringBeanUtil;
+import org.springblade.core.mp.support.Condition;
 import org.springblade.core.secure.BladeUser;
 import org.springblade.core.secure.utils.SecureUtil;
 import org.springblade.core.tool.utils.DateUtil;
 import org.springblade.core.tool.utils.Func;
+import org.springblade.modules.system.entity.Post;
+import org.springblade.modules.system.service.impl.PostServiceImpl;
 import org.springblade.nsms.entity.NurseInfo;
 import org.springblade.nsms.service.INurseInfoService;
 import org.springblade.rewrite.FoundationEntity;
@@ -18,6 +21,16 @@ import java.util.Date;
  * @date 2022/4/3
  **/
 public class ServiceImplUtil {
+
+	public static Integer getUserPostType(){
+		NurseInfo nurseInfo=getNurseInfoFromUser();
+		Post post=SpringBeanUtil.getApplicationContext().getBean(PostServiceImpl.class)
+			.getOne(Condition.getQueryWrapper(new Post())
+				.eq("tenant_id", nurseInfo.getTenantId())
+				.eq("id", nurseInfo.getPosition()));
+		return post.getCategory();
+	}
+
 
 	public static <T extends FoundationEntity> String getUserTenantId() {
 		BladeUser user =  SecureUtil.getUser();

@@ -24,10 +24,15 @@ import lombok.AllArgsConstructor;
 import org.springblade.core.boot.ctrl.BladeController;
 import org.springblade.core.mp.support.Condition;
 import org.springblade.core.mp.support.Query;
+import org.springblade.core.secure.BladeUser;
+import org.springblade.core.secure.utils.SecureUtil;
 import org.springblade.core.tool.api.R;
 import org.springblade.core.tool.utils.Func;
 import org.springblade.nsms.entity.Expectation;
+import org.springblade.nsms.entity.NurseInfo;
 import org.springblade.nsms.service.IExpectationService;
+import org.springblade.nsms.tools.Constant;
+import org.springblade.nsms.tools.ServiceImplUtil;
 import org.springblade.nsms.vo.ExpectationVO;
 import org.springblade.nsms.wrapper.ExpectationWrapper;
 import org.springframework.web.bind.annotation.*;
@@ -66,21 +71,44 @@ public class ExpectationController extends BladeController {
 	@ApiOperationSupport(order = 2)
 	@ApiOperation(value = "分页", notes = "传入expectation")
 	public R<IPage<ExpectationVO>> list(Expectation expectation, Query query) {
-		IPage<Expectation> pages = expectationService.page(Condition.getPage(query), Condition.getQueryWrapper(expectation));
-		return R.data(ExpectationWrapper.build().pageVO(pages));
+		Integer userPostType= ServiceImplUtil.getUserPostType();
+		NurseInfo nurseInfo=ServiceImplUtil.getNurseInfoFromUser();
+		if (userPostType.equals(Constant.POST_TYPE_DEPT_HEAD_NURSE)){
+			//当角色为护士长时
+			IPage<Expectation> pages = expectationService.page(
+				Condition.getPage(query),
+				Condition.getQueryWrapper(expectation)
+					.eq("create_dept", nurseInfo.getDepartment())
+					.eq("tenant_id",nurseInfo.getTenantId())
+			);
+			return R.data(ExpectationWrapper.build().pageVO(pages));
+		}else if (userPostType.equals(Constant.POST_TYPE_NURSE)
+			||userPostType.equals(Constant.POST_TYPE_ASSISTANT)){
+			//当角色为护士或助手时
+			IPage<Expectation> pages = expectationService.page(
+				Condition.getPage(query),
+				Condition.getQueryWrapper(expectation)
+					.eq("create_dept", nurseInfo.getDepartment())
+					.eq("tenant_id",nurseInfo.getTenantId())
+					.eq("create_user", nurseInfo.getUserId())
+			);
+			return R.data(ExpectationWrapper.build().pageVO(pages));
+		}
+		//其他角色的数据权限
+		return R.status(false);
 	}
 
 
 	/**
 	 * 自定义分页 护士助手的排班期望表
 	 */
-	@GetMapping("/page")
-	@ApiOperationSupport(order = 3)
-	@ApiOperation(value = "分页", notes = "传入expectation")
-	public R<IPage<ExpectationVO>> page(ExpectationVO expectation, Query query) {
-		IPage<ExpectationVO> pages = expectationService.selectExpectationPage(Condition.getPage(query), expectation);
-		return R.data(pages);
-	}
+//	@GetMapping("/page")
+//	@ApiOperationSupport(order = 3)
+//	@ApiOperation(value = "分页", notes = "传入expectation")
+//	public R<IPage<ExpectationVO>> page(ExpectationVO expectation, Query query) {
+//		IPage<ExpectationVO> pages = expectationService.selectExpectationPage(Condition.getPage(query), expectation);
+//		return R.data(pages);
+//	}
 
 	/**
 	 * 新增 护士助手的排班期望表
