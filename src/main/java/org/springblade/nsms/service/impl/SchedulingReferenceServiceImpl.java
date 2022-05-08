@@ -17,6 +17,7 @@ package org.springblade.nsms.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springblade.core.mp.support.Condition;
+import org.springblade.core.tool.utils.DateUtil;
 import org.springblade.core.tool.utils.SpringUtil;
 import org.springblade.nsms.dto.*;
 import org.springblade.nsms.entity.Expectation;
@@ -56,15 +57,19 @@ public class SchedulingReferenceServiceImpl extends FoundationServiceImpl<Schedu
 
 	@Override
 	public boolean saveOrUpdateEntity(SchedulingReferenceVO schedulingReferenceVO) {
-		try {
+//		try {
 			//对添加或修改的数据进行逻辑验证
 			List<String> dateList=schedulingReferenceVO.getDateRange();
-			if (dateList.size()==2){
+			if (dateList!=null&&dateList.size()==2){
 				//解析封装并赋值
-				schedulingReferenceVO.setStartDate(DateFormat.getDateInstance().parse(dateList.get(0)));
-				schedulingReferenceVO.setEndDate(DateFormat.getDateInstance().parse(dateList.get(1)));
+				try {
+					schedulingReferenceVO.setStartDate(DateUtil.parse(dateList.get(0), DateUtil.PATTERN_DATE));
+					schedulingReferenceVO.setEndDate(DateUtil.parse(dateList.get(1), DateUtil.PATTERN_DATE));
+				}catch (Exception e){
+					throw new RuntimeException(e.getCause()+" ; "+e.getMessage());
+				}
 				if (schedulingReferenceVO.getEndDate().before(schedulingReferenceVO.getStartDate())){
-					throw new Exception("日期区间错误！");
+					throw new RuntimeException("日期区间错误！");
 				}
 				//针对一些字段进行初始化
 				if (schedulingReferenceVO.getId()==null){
@@ -72,12 +77,15 @@ public class SchedulingReferenceServiceImpl extends FoundationServiceImpl<Schedu
 					schedulingReferenceVO.setDepartmentId(ServiceImplUtil.getNurseInfoFromUser().getDepartment());
 					schedulingReferenceVO.setState(0);
 				}
+				//如果不为空，那么就应该避免一些字段例如审核状态被改变
+				SchedulingReference origin=this.getById(schedulingReferenceVO.getId());
+				schedulingReferenceVO.setState(origin.getState());
 				return this.saveOrUpdate(schedulingReferenceVO);
 			}
 			return false;
-		}catch (Exception e){
-			throw new RuntimeException("请确保提交的数据符合规范。");
-		}
+//		}catch (Exception e){
+//			throw new RuntimeException("请确保提交的数据符合规范。");
+//		}
 	}
 
 	/**

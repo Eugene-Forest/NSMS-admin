@@ -1,6 +1,7 @@
 package org.springblade.nsms.tools;
 
 import lombok.SneakyThrows;
+import org.apache.poi.ss.formula.functions.T;
 import org.springblade.common.tool.SpringBeanUtil;
 import org.springblade.core.secure.BladeUser;
 import org.springblade.core.secure.utils.SecureUtil;
@@ -125,35 +126,33 @@ public class ServiceImplUtil {
 		resolveEntityByBladeUser(entity,user);
 	}
 
-	@SneakyThrows
 	public static <T extends FoundationEntity> void resolveEntityByBladeUser(T entity,BladeUser user) {
 		try {
 			Date now = DateUtil.now();
 			//判断是更新还是添加
+			if (user==null){
+				throw new RuntimeException("找不到用户对应的信息！");
+			}
+			//判断是更新还是添加
 			if (entity.getId() == null) {
-				if (user != null) {
-					entity.setCreateUser(user.getUserId());
-					entity.setUpdateUser(user.getUserId());
-					//添加判断以适应测试用的账户可能会出现的部门id为空的情况
-					if (user.getDeptId()!=null){
-						entity.setCreateDept(Long.valueOf(user.getDeptId()));
-					}
+				//当操作为更新时
+				entity.setCreateUser(user.getUserId());
+				//添加判断以适应测试用的账户可能会出现的部门id为空的情况
+				if (user.getDeptId()!=null){
+					entity.setCreateDept(Long.valueOf(user.getDeptId()));
 				}
-
-				if (entity.getStatus() == null) {
-					entity.setStatus(1);
-				}
-
 				entity.setCreateTime(now);
 				entity.setIsDeleted(0);
-				assert user != null;
+				entity.setStatus(0);
 				entity.setTenantId(user.getTenantId());
-			} else if (user != null) {
+			} else {
 				entity.setUpdateUser(user.getUserId());
 				entity.setUpdateTime(now);
+				//将此纪录的系统状态加1以表示此纪录被更新
+				entity.setStatus(entity.getStatus()+1);
 			}
 
-		} catch (Throwable var8) {
+		} catch (Exception var8) {
 			throw new RuntimeException("处理业务类的基础类[FoundationEntity]时出现错误");
 		}
 	}

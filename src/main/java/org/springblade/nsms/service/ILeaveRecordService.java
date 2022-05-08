@@ -50,13 +50,14 @@ public interface ILeaveRecordService extends FoundationService<LeaveRecord> {
 	boolean applyOrUpdateForLeave(LeaveRecord leaveRecord);
 
 	/**
-	 * 自定义分页
+	 * 自定分页
 	 *
 	 * @param page
 	 * @param leaveRecord
 	 * @return
 	 */
 	IPage<LeaveRecordVO> selectLeaveRecordPage(IPage<LeaveRecordVO> page, LeaveRecordVO leaveRecord);
+
 
 	/**
 	 * 审核请假记录

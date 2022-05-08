@@ -18,6 +18,8 @@ package org.springblade.nsms.wrapper;
 import org.springblade.core.mp.support.BaseEntityWrapper;
 import org.springblade.core.tool.utils.BeanUtil;
 import org.springblade.nsms.entity.ShiftRecord;
+import org.springblade.nsms.tools.Constant;
+import org.springblade.nsms.tools.ServiceImplUtil;
 import org.springblade.nsms.vo.ShiftRecordVO;
 
 /**

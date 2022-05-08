@@ -23,6 +23,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springblade.rewrite.FoundationService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 护士档案  服务类
@@ -102,4 +103,11 @@ public interface INurseInfoService extends FoundationService<NurseInfo> {
 	 * @return
 	 */
 	List<NurseInfoDTO> selectAllBaseNurseFromSampDept();
+
+
+	/**
+	 * 获取本人的id以及名字
+	 * @return
+	 */
+	Map<String,String> getUserIdAndName();
 }

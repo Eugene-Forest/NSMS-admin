@@ -3,10 +3,12 @@ package org.springblade.rewrite;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.SneakyThrows;
+import org.springblade.core.mp.support.Condition;
 import org.springblade.core.secure.BladeUser;
 import org.springblade.core.secure.utils.SecureUtil;
 import org.springblade.core.tool.utils.BeanUtil;
 import org.springblade.core.tool.utils.DateUtil;
+import org.springblade.nsms.entity.Expectation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
@@ -39,6 +41,7 @@ public class FoundationServiceImpl<M extends BaseMapper<T>, T extends Foundation
 			}
 
 			entity.setUpdateTime(DateUtil.now());
+			entity.setStatus(entity.getStatus()+1);
 			entity.setId(id);
 			list.add(entity);
 		});
@@ -79,12 +82,26 @@ public class FoundationServiceImpl<M extends BaseMapper<T>, T extends Foundation
 
 	@Override
 	public boolean updateById(T entity) {
-		this.resolveEntity(entity);
-		return super.updateById(entity);
+		//在更新前先进行记录的系统状态验证
+		T origin=super.getById(entity.getId());
+		if (origin.getStatus().equals(entity.getStatus())){
+			this.resolveEntity(entity);
+			return super.updateById(entity);
+		}else {
+			throw new RuntimeException("此数据已被更新，请刷新数据后再进行编辑！");
+		}
 	}
 
 	@Override
 	public boolean updateBatchById(Collection<T> entityList, int batchSize) {
+		//在更新前先进行记录的系统状态验证
+		entityList.forEach(x->{
+			//在更新前先进行记录的系统状态验证
+			T origin=super.getById(x.getId());
+			if (!origin.getStatus().equals(x.getStatus())){
+				throw new RuntimeException("此数据已被更新，请刷新数据后再进行编辑！");
+			}
+		});
 		entityList.forEach(this::resolveEntity);
 		return super.updateBatchById(entityList, batchSize);
 	}
@@ -100,51 +117,34 @@ public class FoundationServiceImpl<M extends BaseMapper<T>, T extends Foundation
 		return super.saveOrUpdateBatch(entityList, batchSize);
 	}
 
-
-
-	@SneakyThrows
 	private void resolveEntity(T entity) {
 		try {
 			BladeUser user = SecureUtil.getUser();
 			Date now = DateUtil.now();
+			if (user==null){
+				throw new RuntimeException("找不到用户对应的信息！");
+			}
 			//判断是更新还是添加
 			if (entity.getId() == null) {
-				if (user != null) {
-					entity.setCreateUser(user.getUserId());
-					entity.setUpdateUser(user.getUserId());
-					//添加判断以适应测试用的账户可能会出现的部门id为空的情况
-					if (user.getDeptId()!=null){
-						entity.setCreateDept(Long.valueOf(user.getDeptId()));
-					}
+				//当操作为更新时
+				entity.setCreateUser(user.getUserId());
+				//添加判断以适应测试用的账户可能会出现的部门id为空的情况
+				if (user.getDeptId()!=null){
+					entity.setCreateDept(Long.valueOf(user.getDeptId()));
 				}
-
-				if (entity.getStatus() == null) {
-					entity.setStatus(1);
-				}
-
 				entity.setCreateTime(now);
 				entity.setIsDeleted(0);
-				assert user != null;
+				entity.setStatus(0);
 				entity.setTenantId(user.getTenantId());
-			} else if (user != null) {
+			} else {
 				entity.setUpdateUser(user.getUserId());
 				entity.setUpdateTime(now);
+				//将此纪录的系统状态加1以表示此纪录被更新
+				entity.setStatus(entity.getStatus()+1);
 			}
-
-//			Field field = ReflectUtil.getField(entity.getClass(), "tenantId");
-//			if (ObjectUtil.isNotEmpty(field)) {
-//				Method getTenantId = ClassUtil.getMethod(entity.getClass(), "getTenantId");
-//				String tenantId = String.valueOf(getTenantId.invoke(entity));
-//				Method setTenantId = ClassUtil.getMethod(entity.getClass(), "setTenantId");
-//				if (ObjectUtil.isEmpty(tenantId)) {
-//					setTenantId.invoke(entity, null);
-//				}else{
-//					setTenantId.invoke(entity, tenantId);
-//				}
-//			}
-
-		} catch (Throwable var8) {
-			throw new RuntimeException("处理业务类的基础类[FoundationEntity]时出现错误");
+		}catch (Exception e){
+			throw new RuntimeException(e.getMessage());
 		}
+
 	}
 }

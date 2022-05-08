@@ -143,7 +143,7 @@ public class NurseInfoController extends BladeController {
 
 	@GetMapping("/selectCoWorker")
 	@ApiOperationSupport(order = 8)
-	@ApiOperation(value = "同部门同事下拉列表")
+	@ApiOperation(value = "同部门同事下拉列表(除了自己)")
 	public R  selectCoWorkerFromSameDept(){
 		return R.data(nurseInfoService.selectCoWorkerFromSameDept());
 	}
@@ -151,7 +151,7 @@ public class NurseInfoController extends BladeController {
 
 	@GetMapping("/selectHeadNurse")
 	@ApiOperationSupport(order = 9)
-	@ApiOperation(value = "同部门护士长下拉列表")
+	@ApiOperation(value = "同部门护士长下拉列表(除了自己)")
 	public R  selectHeadNurseFromSameDept(){
 		return R.data(nurseInfoService.selectHeadNurseFromSameDept());
 	}
@@ -174,10 +174,19 @@ public class NurseInfoController extends BladeController {
 
 	@GetMapping("/selectAllCo")
 	@ApiOperationSupport(order = 10)
-	@ApiOperation(value = "同部门所有护士长下拉列表")
+	@ApiOperation(value = "获取同部门所有护理人员（护士、助手、护士长）的信息")
 	public R  selectAllCo(){
 		return R.data(nurseInfoService.selectAllFromSameDept());
 	}
+
+
+	@GetMapping("/getUserIdAndName")
+	@ApiOperationSupport(order = 10)
+	@ApiOperation(value = "获取本人的id以及姓名")
+	public R getUserIdAndName(){
+		return R.data(nurseInfoService.getUserIdAndName());
+	}
+
 
 
 }

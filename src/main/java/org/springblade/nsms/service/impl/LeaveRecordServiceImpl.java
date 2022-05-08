@@ -61,8 +61,8 @@ public class LeaveRecordServiceImpl extends FoundationServiceImpl<LeaveRecordMap
 			}
 			leaveRecord.setNurseSid(nurseInfo.getId());
 			//将获取到的用户信息写入请假记录中，并执行默认的保存方法
-			ServiceImplUtil.resolveEntityByBladeUser(leaveRecord, user);
-			return baseMapper.insert(leaveRecord)==1?true:false;
+//			ServiceImplUtil.resolveEntityByBladeUser(leaveRecord, user);
+			return this.save(leaveRecord);
 		}
 	}
 
@@ -75,8 +75,11 @@ public class LeaveRecordServiceImpl extends FoundationServiceImpl<LeaveRecordMap
 	@Override
 	public boolean updateForLeave(LeaveRecord leaveRecord) {
 		//将获取到的用户信息写入请假记录中，并执行默认的保存方法
-		ServiceImplUtil.resolveEntity(leaveRecord);
-		return baseMapper.updateById(leaveRecord)==1?true:false;
+		LeaveRecord origin=this.getById(leaveRecord.getId());
+		if (!origin.getApprovalStatus().equals(Constant.APPROVAL_STATUS_PENDING)){
+			throw new RuntimeException("请刷新页面并请确认被选中的申请的审核状态！");
+		}
+		return this.updateById(leaveRecord);
 	}
 
 	/**
@@ -121,7 +124,9 @@ public class LeaveRecordServiceImpl extends FoundationServiceImpl<LeaveRecordMap
 			originLeaveRecord.setApprovalOpinion(leaveRecord.getApprovalOpinion());
 			//添加审核人的信息
 			originLeaveRecord.setApprover(ServiceImplUtil.getNurseIdFromUser());
-			return baseMapper.updateById(originLeaveRecord)==1?true:false;
+			//保留字段的系统状态
+			originLeaveRecord.setStatus(leaveRecord.getStatus());
+			return this.updateById(originLeaveRecord);
 		}else {
 			throw new RuntimeException("此请假已经被审批！请反审再进行审批。");
 		}
@@ -143,7 +148,9 @@ public class LeaveRecordServiceImpl extends FoundationServiceImpl<LeaveRecordMap
 			originLeaveRecord.setApprover(ServiceImplUtil.getNurseIdFromUser());
 			originLeaveRecord.setApprovalOpinion(leaveRecord.getApprovalOpinion());
 			originLeaveRecord.setApprovalStatus(Constant.APPROVAL_STATUS_PENDING);
-			return baseMapper.updateById(originLeaveRecord)==1?true:false;
+			//保留字段的系统状态
+			originLeaveRecord.setStatus(leaveRecord.getStatus());
+			return this.updateById(originLeaveRecord);
 		}else {
 			//如果不处于审核完成的状态则出错
 			throw new RuntimeException("反审失败！请确认请假记录是否处于未被审核状态。");

@@ -30,6 +30,10 @@ import org.springblade.core.secure.utils.SecureUtil;
 import org.springblade.core.tool.api.R;
 import org.springblade.core.tool.utils.Func;
 import org.springblade.nsms.entity.LeaveRecord;
+import org.springblade.nsms.entity.NurseInfo;
+import org.springblade.nsms.entity.ShiftRecord;
+import org.springblade.nsms.tools.Constant;
+import org.springblade.nsms.tools.ServiceImplUtil;
 import org.springblade.nsms.vo.LeaveRecordVO;
 import org.springblade.nsms.wrapper.LeaveRecordWrapper;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +41,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springblade.nsms.service.ILeaveRecordService;
 import org.springblade.core.boot.ctrl.BladeController;
+
+import java.util.List;
 
 /**
  * 请假记录表 控制器
@@ -68,7 +74,7 @@ public class LeaveRecordController extends BladeController {
 	 */
 	@GetMapping("/list")
 	@ApiOperationSupport(order = 2)
-	@ApiOperation(value = "分页", notes = "传入leaveRecord")
+	@ApiOperation(value = "助手以及护士分页", notes = "传入leaveRecord")
 	public R<IPage<LeaveRecordVO>> list(LeaveRecord leaveRecord, Query query) {
 		BladeUser user = SecureUtil.getUser();
 		//todo: 需要针对管理员用户与普通用户以区别,同时针对不同角色的用户有不同的筛选条件(即：数据权限功能)
@@ -81,7 +87,32 @@ public class LeaveRecordController extends BladeController {
 			pages = leaveRecordService.page(Condition.getPage(query),
 				Condition.getQueryWrapper(leaveRecord).
 					eq("tenant_id",user.getTenantId()).
-					eq("create_dept", user.getDeptId()));
+					eq("create_dept", user.getDeptId()).
+					eq("create_user",user.getUserId())
+					);
+			return R.data(LeaveRecordWrapper.build().pageVO(pages));
+		}else {
+			throw new RuntimeException("请确认此账号是否属于租户！");
+		}
+	}
+
+	@GetMapping("/listForApproval")
+	@ApiOperationSupport(order = 3)
+	@ApiOperation(value = "护士长的分页", notes = "传入leaveRecord")
+	public R<IPage<LeaveRecordVO>> listForApproval(LeaveRecord leaveRecord, Query query) {
+		NurseInfo nurseInfo = ServiceImplUtil.getNurseInfoFromUser();
+		//todo: 需要针对管理员用户与普通用户以区别,同时针对不同角色的用户有不同的筛选条件(即：数据权限功能)
+		//对于根管理员有所有的数据查看权限，对于医院管理员有对应医院的所有数据的查看权限
+		//对于用户，若是科室护士长则有对应科室的所有数据的查看权限，对于护士或助手则只有其对应或相关的数据的查看权限
+		//对于适应后期添加用户角色以适应数据权限的查看机制的设计！！
+
+		IPage<LeaveRecord> pages;
+		if (nurseInfo.getTenantId()!=null){
+			pages = leaveRecordService.page(Condition.getPage(query),
+				Condition.getQueryWrapper(leaveRecord).
+					eq("tenant_id",nurseInfo.getTenantId()).
+					eq("create_dept", nurseInfo.getDepartment())
+					.eq("approver", nurseInfo.getId()));
 			return R.data(LeaveRecordWrapper.build().pageVO(pages));
 		}else {
 			throw new RuntimeException("请确认此账号是否属于租户！");
@@ -117,6 +148,10 @@ public class LeaveRecordController extends BladeController {
 	@ApiOperationSupport(order = 5)
 	@ApiOperation(value = "修改", notes = "传入leaveRecord")
 	public R update(@Valid @RequestBody LeaveRecord leaveRecord) {
+		LeaveRecord origin=leaveRecordService.getById(leaveRecord.getId());
+		if (!origin.getApprovalStatus().equals(Constant.APPROVAL_STATUS_PENDING)){
+			throw new RuntimeException("请刷新页面并请确认被选中的申请的审核状态！");
+		}
 		return R.status(leaveRecordService.updateForLeave(leaveRecord));
 	}
 
@@ -138,6 +173,13 @@ public class LeaveRecordController extends BladeController {
 	@ApiOperationSupport(order = 7)
 	@ApiOperation(value = "逻辑删除", notes = "传入ids")
 	public R remove(@ApiParam(value = "主键集合", required = true) @RequestParam String ids) {
+		List<Long> idList=Func.toLongList(ids);
+		idList.forEach(x->{
+			LeaveRecord origin=leaveRecordService.getById(x);
+			if (!origin.getApprovalStatus().equals(Constant.APPROVAL_STATUS_PENDING)){
+				throw new RuntimeException("请刷新页面并请确认被选中的申请的审核状态！");
+			}
+		});
 		return R.status(leaveRecordService.deleteLogic(Func.toLongList(ids)));
 	}
 

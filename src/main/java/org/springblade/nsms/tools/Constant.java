@@ -80,29 +80,44 @@ public class Constant {
 	public static Integer EXCHANGE_APPROVAL_STATUS_PENDING=0;
 
 	/**
+	 * 换班申请审核状态： 待商议
+	 */
+	public static Integer EXCHANGE_APPROVAL_STATUS_I_PENDING=8;
+
+	/**
+	 * 换班申请审核状态： 我不同意
+	 */
+	public static Integer EXCHANGE_APPROVAL_STATUS_I_DISAGREE=9;
+
+	/**
+	 * 换班申请审核状态： 我同意
+	 */
+	public static Integer EXCHANGE_APPROVAL_STATUS_I_AGREE=10;
+
+	/**
 	 * 换班申请审核状态： 被申请人不同意
 	 */
-	public static Integer EXCHANGE_APPROVAL_STATUS_DISAGREE=1;
+	public static Integer EXCHANGE_APPROVAL_STATUS_DISAGREE=19;
 
 	/**
 	 * 换班申请审核状态： 被申请人同意
 	 */
-	public static Integer EXCHANGE_APPROVAL_STATUS_AGREE=2;
+	public static Integer EXCHANGE_APPROVAL_STATUS_AGREE=20;
 
 	/**
 	 * 换班申请审核状态： 待审核
 	 */
-	public static Integer EXCHANGE_APPROVAL_STATUS_PENDING_CHECK=3;
+	public static Integer EXCHANGE_APPROVAL_STATUS_PENDING_CHECK=30;
 
 	/**
 	 * 换班申请审核状态： 护士长驳回
 	 */
-	public static Integer EXCHANGE_APPROVAL_STATUS_REJECT=4;
+	public static Integer EXCHANGE_APPROVAL_STATUS_REJECT=40;
 
 	/**
 	 * 换班申请审核状态： 护士长同意
 	 */
-	public static Integer EXCHANGE_APPROVAL_STATUS_PASS=5;
+	public static Integer EXCHANGE_APPROVAL_STATUS_PASS=50;
 
 	/**
 	 * 请假申请审核状态： 未审核

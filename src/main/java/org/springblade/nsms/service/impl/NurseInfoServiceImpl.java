@@ -34,7 +34,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 护士档案  服务实现类
@@ -191,6 +193,20 @@ public class NurseInfoServiceImpl extends FoundationServiceImpl<NurseInfoMapper,
 	public List<NurseInfoDTO> selectAllBaseNurseFromSampDept() {
 		NurseInfo nurseInfo=ServiceImplUtil.getNurseInfoFromUser();
 		return baseMapper.selectAllBaseNurseFromSampDept(nurseInfo.getDepartment(), nurseInfo.getTenantId());
+	}
+
+	/**
+	 * 获取本人的id以及名字
+	 *
+	 * @return
+	 */
+	@Override
+	public Map<String, String> getUserIdAndName() {
+		Map<String,String> infoMap=new HashMap<>();
+		NurseInfo nurseInfo=ServiceImplUtil.getNurseInfoFromUser();
+		infoMap.put("id", Func.toStr(nurseInfo.getId()));
+		infoMap.put("name", nurseInfo.getName());
+		return infoMap;
 	}
 
 

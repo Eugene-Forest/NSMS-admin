@@ -15,16 +15,21 @@
  */
 package org.springblade.nsms.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import org.springblade.core.mp.support.Condition;
+import org.springblade.core.mp.support.Query;
+import org.springblade.core.tool.utils.Func;
+import org.springblade.nsms.entity.NurseInfo;
 import org.springblade.nsms.entity.ShiftRecord;
-import org.springblade.nsms.tools.Constant;
-import org.springblade.nsms.vo.ShiftRecordVO;
 import org.springblade.nsms.mapper.ShiftRecordMapper;
 import org.springblade.nsms.service.IShiftRecordService;
+import org.springblade.nsms.tools.Constant;
+import org.springblade.nsms.tools.ServiceImplUtil;
+import org.springblade.nsms.vo.ShiftRecordVO;
+import org.springblade.nsms.wrapper.ShiftRecordWrapper;
 import org.springblade.rewrite.FoundationServiceImpl;
 import org.springframework.stereotype.Service;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -63,7 +68,9 @@ public class ShiftRecordServiceImpl extends FoundationServiceImpl<ShiftRecordMap
 		|| originShiftRecord.getApplicationStatus().equals(Constant.EXCHANGE_APPROVAL_STATUS_AGREE)){
 			originShiftRecord.setApplicationStatus(shiftRecord.getApplicationStatus());
 			originShiftRecord.setApprovalOpinion(shiftRecord.getApprovalOpinion());
-			return baseMapper.updateById(originShiftRecord)==1?true:false;
+			//保留字段的系统状态
+			originShiftRecord.setStatus(shiftRecord.getStatus());
+			return this.updateById(originShiftRecord);
 		}else {
 			throw new RuntimeException("审核失败！请确认换班记录的状态。");
 		}
@@ -92,9 +99,11 @@ public class ShiftRecordServiceImpl extends FoundationServiceImpl<ShiftRecordMap
 			|| originShiftRecord.getApplicationStatus().equals(Constant.EXCHANGE_APPROVAL_STATUS_PASS)){
 			//将换班记录改为未审核状态
 			//能过被护士长审核的换班都是被同意的
-			originShiftRecord.setApplicationStatus(Constant.EXCHANGE_APPROVAL_STATUS_PENDING_CHECK);
+			originShiftRecord.setApplicationStatus(Constant.EXCHANGE_APPROVAL_STATUS_AGREE);
 			originShiftRecord.setApprovalOpinion(shiftRecord.getApprovalOpinion());
-			return baseMapper.updateById(originShiftRecord)==1?true:false;
+			//保留字段的系统状态
+			originShiftRecord.setStatus(shiftRecord.getStatus());
+			return this.updateById(originShiftRecord);
 		}else {
 			throw new RuntimeException("反审失败！请确认换班记录是否处于审核过的状态。");
 		}
@@ -119,7 +128,9 @@ public class ShiftRecordServiceImpl extends FoundationServiceImpl<ShiftRecordMap
 		ShiftRecord originShiftRecord=baseMapper.selectById(shiftRecord.getId());
 		if (originShiftRecord.getApplicationStatus().equals(Constant.EXCHANGE_APPROVAL_STATUS_PENDING)){
 			originShiftRecord.setApplicationStatus(shiftRecord.getApplicationStatus());
-			return baseMapper.updateById(originShiftRecord)==1?true:false;
+			//保留字段的系统状态
+			originShiftRecord.setStatus(shiftRecord.getStatus());
+			return this.updateById(originShiftRecord);
 		}else {
 			throw new RuntimeException("审核商议失败！请确认换班记录的状态。");
 		}
@@ -142,13 +153,15 @@ public class ShiftRecordServiceImpl extends FoundationServiceImpl<ShiftRecordMap
 		ShiftRecord originShiftRecord=baseMapper.selectById(shiftRecord.getId());
 		//交班的数据的状态必须为 被申请人同意/不同意两种
 		if (
-			(!shiftRecord.getApplicationStatus().equals(Constant.EXCHANGE_APPROVAL_STATUS_AGREE))
-				&& (!shiftRecord.getApplicationStatus().equals(Constant.EXCHANGE_APPROVAL_STATUS_DISAGREE))
+			(!shiftRecord.getApplicationStatus().equals(Constant.EXCHANGE_APPROVAL_STATUS_I_AGREE))
+				&& (!shiftRecord.getApplicationStatus().equals(Constant.EXCHANGE_APPROVAL_STATUS_I_DISAGREE))
 		){
 			throw new RuntimeException("反审商议失败！请确认换班记录的状态。");
 		}else {
 			originShiftRecord.setApplicationStatus(Constant.EXCHANGE_APPROVAL_STATUS_PENDING);
-			return baseMapper.updateById(originShiftRecord)==1?true:false;
+			//保留字段的系统状态
+			originShiftRecord.setStatus(shiftRecord.getStatus());
+			return this.updateById(originShiftRecord);
 		}
 	}
 
