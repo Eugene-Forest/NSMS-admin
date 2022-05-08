@@ -17,9 +17,11 @@ package org.springblade.nsms.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import org.springblade.common.tool.SpringBeanUtil;
 import org.springblade.core.mp.support.Condition;
 import org.springblade.core.tool.utils.Func;
 import org.springblade.nsms.entity.Expectation;
+import org.springblade.nsms.entity.SchedulingReference;
 import org.springblade.nsms.mapper.ExpectationMapper;
 import org.springblade.nsms.service.IExpectationService;
 import org.springblade.nsms.tools.Constant;
@@ -69,6 +71,13 @@ public class ExpectationServiceImpl extends FoundationServiceImpl<ExpectationMap
 	@Override
 	public boolean saveOrUpdateExpectationVO(ExpectationVO expectation) {
 		try {
+			//在添加或更新前先进行对排班配置表的状态
+			SchedulingReference schedulingReference=
+				SpringBeanUtil.getApplicationContext()
+					.getBean(SchedulingReferenceServiceImpl.class).getById(expectation.getReferenceSid());
+			if (!schedulingReference.getState().equals(Constant.SCHEDULING_REFERENCE_CONFIG_ADD_EXPECTATION)){
+				throw new RuntimeException("排班配置表状态已改变，请刷新期望录入界面！");
+			}
 			List<String> dateList=expectation.getDateRange();
 			if (dateList==null||dateList.size()!=2){
 				throw new Exception("提交的数据异常");
@@ -96,6 +105,14 @@ public class ExpectationServiceImpl extends FoundationServiceImpl<ExpectationMap
 		if (origin==null){
 			throw new RuntimeException("需要被删除的数据id有误");
 		}
+		//在添加或更新前先进行对排班配置表的状态
+		SchedulingReference schedulingReference=
+			SpringBeanUtil.getApplicationContext()
+				.getBean(SchedulingReferenceServiceImpl.class).getById(origin.getReferenceSid());
+		if (!schedulingReference.getState().equals(Constant.SCHEDULING_REFERENCE_CONFIG_ADD_EXPECTATION)){
+			throw new RuntimeException("排班配置表状态已改变，请刷新期望录入界面！");
+		}
+
 		//删除期望需要注意对后续期望的影响
 //		先获取现有的本人的此次排班的所有的期望数据
 		List<Expectation> originList=baseMapper.selectList(
