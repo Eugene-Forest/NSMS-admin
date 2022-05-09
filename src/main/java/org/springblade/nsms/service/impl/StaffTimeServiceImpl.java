@@ -49,37 +49,37 @@ public class StaffTimeServiceImpl extends FoundationServiceImpl<StaffTimeMapper,
 		return page.setRecords(baseMapper.selectStaffTimePage(page, staffTime));
 	}
 
-//	@Override
-//	public List<StaffTimeVO> calendar(String startDate,String endDate) {
-//
-//		Date start=DateUtil.parse(startDate,DateUtil.PATTERN_DATE);
-//		Date end=DateUtil.parse(endDate,DateUtil.PATTERN_DATE);
-//		//获取到查询数据，默认返回查询日期所在的月份的数据
-//		List<StaffTime> staffTimeList =
-//			this.list(
-//				Condition.getQueryWrapper(new StaffTime())
-//					.eq("create_dept", ServiceImplUtil.getNurseDeptFromUser())
-//					.eq("tenant_id", ServiceImplUtil.getUserTenantId())
-//					.between("shift_date",start,end)
-//			);
-//
-//		List<NurseInfoDTO> nurseInfoList= SpringUtil.getContext().getBean(NurseInfoServiceImpl.class).selectAllBaseNurseFromSampDept();
-//		Map<Long,String> nurseInfoMap=new HashMap<>();
-//		for (NurseInfoDTO nurseInfoDTO:nurseInfoList){
-//			nurseInfoMap.put(nurseInfoDTO.getId(), nurseInfoDTO.getName());
-//		}
-//		List<StaffTimeVO> staffTimeVOList=new ArrayList<>();
-//		for (StaffTime staffTime:staffTimeList){
-//			StaffTimeVO staffTimeVO=StaffTimeWrapper.build().entityVO(staffTime);
-//			if (staffTime.getPostType().equals(Constant.POST_TYPE_NURSE)){
-//				staffTimeVO.setTitle(nurseInfoMap.get(staffTime.getNurseSid())+"[护士]");
-//			}else if (staffTime.getPostType().equals(Constant.POST_TYPE_ASSISTANT)){
-//				staffTimeVO.setTitle(nurseInfoMap.get(staffTime.getNurseSid())+"[助手]");
-//			}
-//			staffTimeVOList.add(staffTimeVO);
-//		}
-//		return staffTimeVOList;
-//	}
+	@Override
+	public List<StaffTimeVO> calenderDefault(String startDate,String endDate) {
+
+		Date start=DateUtil.parse(startDate,DateUtil.PATTERN_DATE);
+		Date end=DateUtil.parse(endDate,DateUtil.PATTERN_DATE);
+		//获取到查询数据，默认返回查询日期所在的月份的数据
+		List<StaffTime> staffTimeList =
+			this.list(
+				Condition.getQueryWrapper(new StaffTime())
+					.eq("create_dept", ServiceImplUtil.getNurseDeptFromUser())
+					.eq("tenant_id", ServiceImplUtil.getUserTenantId())
+					.between("shift_date",start,end)
+			);
+
+		List<NurseInfoDTO> nurseInfoList= SpringUtil.getContext().getBean(NurseInfoServiceImpl.class).selectAllBaseNurseFromSampDept();
+		Map<Long,String> nurseInfoMap=new HashMap<>();
+		for (NurseInfoDTO nurseInfoDTO:nurseInfoList){
+			nurseInfoMap.put(nurseInfoDTO.getId(), nurseInfoDTO.getName());
+		}
+		List<StaffTimeVO> staffTimeVOList=new ArrayList<>();
+		for (StaffTime staffTime:staffTimeList){
+			StaffTimeVO staffTimeVO=StaffTimeWrapper.build().entityVO(staffTime);
+			if (staffTime.getPostType().equals(Constant.POST_TYPE_NURSE)){
+				staffTimeVO.setTitle(nurseInfoMap.get(staffTime.getNurseSid())+"[护士]");
+			}else if (staffTime.getPostType().equals(Constant.POST_TYPE_ASSISTANT)){
+				staffTimeVO.setTitle(nurseInfoMap.get(staffTime.getNurseSid())+"[助手]");
+			}
+			staffTimeVOList.add(staffTimeVO);
+		}
+		return staffTimeVOList;
+	}
 
 	@Override
 	public List<StaffTimeVO> calendar(String date) {

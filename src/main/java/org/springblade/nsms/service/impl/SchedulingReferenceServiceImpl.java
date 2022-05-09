@@ -167,6 +167,9 @@ public class SchedulingReferenceServiceImpl extends FoundationServiceImpl<Schedu
 		){
 			throw new RuntimeException("数据异常的状态值异常，请重新提交！");
 		}
+		//
+
+
 		//改为待排班并更新
 		origin.setState(Constant.SCHEDULING_REFERENCE_CONFIG_WAITING_FOR_SCHEDULING);
 		return this.saveOrUpdate(origin);

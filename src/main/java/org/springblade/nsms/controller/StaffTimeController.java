@@ -134,16 +134,15 @@ public class StaffTimeController extends BladeController {
 	@ApiOperationSupport(order = 8)
 	@ApiOperation(value = "获取日历显示的排班数据", notes = "传入staffTime")
 	public R calender(@RequestParam String date) {
-
 		return R.data(staffTimeService.calendar(date));
 	}
 
-//	@GetMapping("/calender")
-//	@ApiOperationSupport(order = 8)
-//	@ApiOperation(value = "获取日历显示的排班数据", notes = "传入staffTime")
-//	public R calender(@RequestParam(value = "start") String startDate,
-//					  @RequestParam(value = "end") String endDate) {
-//		return R.data(staffTimeService.calendar(startDate,endDate));
-//	}
+	@GetMapping("/calenderDefault")
+	@ApiOperationSupport(order = 9)
+	@ApiOperation(value = "获取日历显示的排班数据", notes = "传入staffTime")
+	public R calenderDefault(@RequestParam(value = "start") String startDate,
+					  @RequestParam(value = "end") String endDate) {
+		return R.data(staffTimeService.calenderDefault(startDate,endDate));
+	}
 
 }
