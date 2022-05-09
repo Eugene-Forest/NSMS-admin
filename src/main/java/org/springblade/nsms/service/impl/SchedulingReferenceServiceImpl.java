@@ -16,6 +16,7 @@
 package org.springblade.nsms.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import org.springblade.common.tool.SpringBeanUtil;
 import org.springblade.core.mp.support.Condition;
 import org.springblade.core.tool.utils.DateUtil;
 import org.springblade.core.tool.utils.SpringUtil;
@@ -167,9 +168,14 @@ public class SchedulingReferenceServiceImpl extends FoundationServiceImpl<Schedu
 		){
 			throw new RuntimeException("数据异常的状态值异常，请重新提交！");
 		}
-		//
-
-
+		//将排班配置的状态从排班结束待排班的时候需要将排班配置对应时间区间内的排班结果删除
+		//此方法调用的是逻辑删除
+		SpringBeanUtil.getApplicationContext().getBean(StaffTimeServiceImpl.class)
+			.remove(Condition.getQueryWrapper(new StaffTime())
+				.eq("tenant_id", origin.getTenantId())
+				.eq("create_dept" , origin.getDepartmentId())
+				.eq("is_deleted", 0)
+				.between("shift_date", origin.getStartDate(), origin.getEndDate()));
 		//改为待排班并更新
 		origin.setState(Constant.SCHEDULING_REFERENCE_CONFIG_WAITING_FOR_SCHEDULING);
 		return this.saveOrUpdate(origin);

@@ -26,4 +26,13 @@
         select * from com_staff_time where is_deleted = 0
     </select>
 
+    <update id="deleteSchedulingResultByTimeInterval">
+        update com_staff_time
+        set is_deleted=1
+        where
+            tenant_id=#{tenantId}
+          and create_dept=#{deptId}
+          and is_deleted=0
+          and shift_date between #{start} and #{end}
+    </update>
 </mapper>

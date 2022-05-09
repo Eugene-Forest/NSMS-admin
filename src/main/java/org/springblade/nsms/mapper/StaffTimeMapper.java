@@ -15,10 +15,13 @@
  */
 package org.springblade.nsms.mapper;
 
-import org.springblade.nsms.entity.StaffTime;
-import org.springblade.nsms.vo.StaffTimeVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import org.apache.ibatis.annotations.Param;
+import org.springblade.nsms.entity.StaffTime;
+import org.springblade.nsms.vo.StaffTimeVO;
+
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -37,5 +40,18 @@ public interface StaffTimeMapper extends BaseMapper<StaffTime> {
 	 * @return
 	 */
 	List<StaffTimeVO> selectStaffTimePage(IPage page, StaffTimeVO staffTime);
+
+	/**
+	 * 逻辑删除时间区间内的排班结果
+	 * @param start 开始时间
+	 * @param end 结束时间
+	 * @param tenantId 租户id
+	 * @param deptId 部门id
+	 * @return
+	 */
+	boolean deleteSchedulingResultByTimeInterval(@Param("start") Date start,
+												 @Param("end") Date end,
+												 @Param("tenantId") String tenantId,
+												 @Param("deptId") String deptId);
 
 }
