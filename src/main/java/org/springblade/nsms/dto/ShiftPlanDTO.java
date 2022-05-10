@@ -1,11 +1,13 @@
 package org.springblade.nsms.dto;
 
+import org.springblade.nsms.entity.Expectation;
 import org.springblade.nsms.tools.Constant;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -55,9 +57,41 @@ public class ShiftPlanDTO implements Serializable {
 
 	public void addVacationExpectation(final ExpectationDTO expectation,List<NurseDTO> nurseDTOList){
 		PersonDTO personDTO=new PersonDTO(expectation);
+		//加入之前判断是否存在本人的其他期望
+		if (getNightShiftIds().contains(expectation.getNurseSid())){
+			replaceOrNot(nightShifts, vacationList, nurseDTOList, expectation,personDTO);
+		}else if (getDayShiftIds().contains(expectation.getNurseSid())){
+			replaceOrNot(dayShifts, vacationList, nurseDTOList, expectation,personDTO);
+		}else if (getVacationIds().contains(expectation.getNurseSid())){
+			replaceOrNot(vacationList, vacationList, nurseDTOList, expectation,personDTO);
+		}
+		//如果都不存在所有班次列表，那么说明此次添加是初次添加
 		dealWithNumberOfShift(expectation, nurseDTOList);
 		this.vacationList.add(personDTO);
 	}
+
+	public void replaceOrNot(List<PersonDTO> originShiftList,List<PersonDTO> targetShiftList,
+							 List<NurseDTO> nurseDTOList,ExpectationDTO expectation,
+							 PersonDTO personDTO){
+		//加入之前判断是否存在本人的其他期望，默认：即使存在，也只存在一个班次的排班计划中
+		//如果存在，那么比较两个期望的优先级
+		Optional<PersonDTO> target=originShiftList.stream()
+			.filter(x->!x.getNurseId().equals(expectation.getNurseSid()))
+			.findFirst();
+		if (target.isPresent()){
+			PersonDTO targetPlan=target.get();
+			if (targetPlan.getPriority()<expectation.getPriority()){
+				//新加入的期望优先级高于已经添加的，所以要把原来的期望去掉，然后再加入新期望
+				originShiftList.remove(targetPlan);
+				reduceNumberOfShift(targetPlan, nurseDTOList);
+
+				dealWithNumberOfShift(expectation, nurseDTOList);
+				targetShiftList.add(personDTO);
+			}
+		}
+	}
+
+
 
 	/**
 	 * 通过期望添加日班安排
@@ -65,6 +99,15 @@ public class ShiftPlanDTO implements Serializable {
 	 */
 	public void addDayShift(final ExpectationDTO expectation,List<NurseDTO> nurseDTOList){
 		PersonDTO personDTO=new PersonDTO(expectation);
+		//加入之前判断是否存在本人的其他期望
+		if (getNightShiftIds().contains(expectation.getNurseSid())){
+			replaceOrNot(nightShifts, dayShifts, nurseDTOList, expectation,personDTO);
+		}else if (getDayShiftIds().contains(expectation.getNurseSid())){
+			replaceOrNot(dayShifts, dayShifts, nurseDTOList, expectation,personDTO);
+		}else if (getVacationIds().contains(expectation.getNurseSid())){
+			replaceOrNot(vacationList, dayShifts, nurseDTOList, expectation,personDTO);
+		}
+		//如果都不存在所有班次列表，那么说明此次添加是初次添加
 		dealWithNumberOfShift(expectation, nurseDTOList);
 		this.dayShifts.add(personDTO);
 	}
@@ -85,8 +128,16 @@ public class ShiftPlanDTO implements Serializable {
 	 */
 	public void addNightShift(final ExpectationDTO expectation,List<NurseDTO> nurseDTOList){
 		PersonDTO personDTO=new PersonDTO(expectation);
+		//加入之前判断是否存在本人的其他期望
+		if (getNightShiftIds().contains(expectation.getNurseSid())){
+			replaceOrNot(nightShifts, nightShifts, nurseDTOList, expectation,personDTO);
+		}else if (getDayShiftIds().contains(expectation.getNurseSid())){
+			replaceOrNot(dayShifts, nightShifts, nurseDTOList, expectation,personDTO);
+		}else if (getVacationIds().contains(expectation.getNurseSid())){
+			replaceOrNot(vacationList, nightShifts, nurseDTOList, expectation,personDTO);
+		}
+		//如果都不存在所有班次列表，那么说明此次添加是初次添加
 		dealWithNumberOfShift(expectation, nurseDTOList);
-
 		this.nightShifts.add(personDTO);
 	}
 
@@ -197,6 +248,11 @@ public class ShiftPlanDTO implements Serializable {
 		});
 	}
 
+	/**
+	 * 排班计划班次计数器
+	 * @param expectation
+	 * @param nurseDTOList
+	 */
 	public void dealWithNumberOfShift(ExpectationDTO expectation,List<NurseDTO> nurseDTOList){
 		nurseDTOList.forEach(x->{
 			if (x.getNurseId().equals(expectation.getNurseSid())){
@@ -213,4 +269,29 @@ public class ShiftPlanDTO implements Serializable {
 		});
 	}
 
+	public void reduceNumberOfShift(PersonDTO personDTO,List<NurseDTO> nurseDTOList){
+		nurseDTOList.forEach(x->{
+			if (x.getNurseId().equals(personDTO.getNurseId())){
+				if (personDTO.getType().equals(Constant.EXPECTATION_TYPE_NIGHT_SHIFT)
+					|| personDTO.getType().equals(Constant.EXPECTATION_TYPE_NIGHT_NUMBER)){
+					x.nightShiftNumberReduce();
+				}else if (personDTO.getType().equals(Constant.EXPECTATION_TYPE_DAY_SHIFT)
+					|| personDTO.getType().equals(Constant.EXPECTATION_TYPE_DAY_NUMBER)){
+					x.dayShiftNumberReduce();
+				}else if (personDTO.getType().equals(Constant.EXPECTATION_TYPE_VACATION)){
+					x.vacationDayNumberReduce();
+				}
+			}
+		});
+	}
+
+		public List<Long> getDayShiftIds(){
+		return this.dayShifts.stream().map(PersonDTO::getNurseId).collect(Collectors.toList());
+	}
+	public List<Long> getNightShiftIds(){
+		return this.nightShifts.stream().map(PersonDTO::getNurseId).collect(Collectors.toList());
+	}
+	public List<Long> getVacationIds(){
+		return this.vacationList.stream().map(PersonDTO::getNurseId).collect(Collectors.toList());
+	}
 }
