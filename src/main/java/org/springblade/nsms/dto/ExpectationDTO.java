@@ -27,7 +27,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ExpectationDTO extends Expectation {
+public class ExpectationDTO extends Expectation implements Comparable<ExpectationDTO>{
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -46,5 +46,36 @@ public class ExpectationDTO extends Expectation {
 		this.setActualState(expectation.getActualState());
 		this.setReferenceSid(expectation.getReferenceSid());
 		this.postType = postType;
+	}
+
+	/**
+	 * 优先级比较
+	 * @param o the object to be compared.
+	 * @return
+	 */
+	@Override
+	public int compareTo(ExpectationDTO o) {
+		if (this.getPriority().compareTo(o.getPriority())>0){
+			return 1;
+		}else if (this.getPriority().compareTo(o.getPriority())<0){
+			return -1;
+		}else {
+			return 0;
+		}
+	}
+
+	/**
+	 * 优先级比较(逆序)
+	 * @param o the object to be compared.
+	 * @return
+	 */
+	public int compareToReverse(ExpectationDTO o) {
+		if (this.getPriority().compareTo(o.getPriority())>0){
+			return -1;
+		}else if (this.getPriority().compareTo(o.getPriority())<0){
+			return 1;
+		}else {
+			return 0;
+		}
 	}
 }

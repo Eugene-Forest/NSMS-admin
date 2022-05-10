@@ -130,6 +130,11 @@ public class NurseDTO implements Comparable<NurseDTO> {
 	}
 
 
+	/**
+	 * 优先级比较
+	 * @param o the object to be compared.
+	 * @return
+	 */
 	@Override
 	public int compareTo(NurseDTO o) {
 		if (this.nightShiftNumber.compareTo(o.getNightShiftNumber())>0){

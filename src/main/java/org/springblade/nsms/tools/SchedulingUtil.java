@@ -4,6 +4,7 @@ import org.springblade.core.tool.utils.DateUtil;
 import org.springblade.nsms.dto.*;
 import org.springblade.nsms.entity.Expectation;
 import org.springblade.nsms.entity.SchedulingReference;
+import org.springblade.nsms.vo.ExpectationVO;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -194,6 +195,32 @@ public class SchedulingUtil {
 				}
 			}
 		}
+		//todo 添加优先级期望实现机制
+		//判断是否完成天数期望，判断天数期望于现有的日期期望之间的优先级关系来决定要实现哪个
+//		if(remainNumber>0){
+//			//将夜班日期期望以及假期日期期望按照优先级由小到大（数值由大到小）排序
+//			List<ExpectationDTO> otherExpectations=expectations.stream().filter(
+//				x-> x.getExpectationType().equals(Constant.EXPECTATION_TYPE_VACATION)
+//					|| x.getExpectationType().equals(Constant.EXPECTATION_TYPE_NIGHT_SHIFT)
+//			).sorted(ExpectationDTO::compareToReverse).collect(Collectors.toList());
+//			for (ExpectationDTO expectationDTO :otherExpectations){
+//				if (remainNumber >0){
+//					//判断优先级是否小于日期天数期望
+//					if (expectationDTO.getPriority()>dayNumberExpectations.get(0).getPriority()){
+//						//若此期望优先级小于天数期望，那么将其替换天数期望的班次，并作废此期望
+//
+//						scheduleTable.getShiftPlanDTOList().get(date).addShift(dayNumberExpectations.get(0),nurses);
+//						remainNumber=remainNumber-1;
+//					}else {
+//						//如果比当前的期望的优先级都小，那么后面的就更不用比较了
+//						break;
+//					}
+//				}else {
+//					break;
+//				}
+//			}
+//			//todo 判断天数期望是否成功实现
+//		}
 	}
 
 	/**
@@ -257,6 +284,8 @@ public class SchedulingUtil {
 				}
 			}
 		}
+
+		//todo 添加优先级期望实现机制
 	}
 
 	/**
@@ -607,7 +636,7 @@ public class SchedulingUtil {
 			//剩余人员不足/逐步添加
 			//首先将所有剩余人员加入
 			for (Long remainPersonDTO : remainPersonDTOs) {
-				shiftPlanDTO.addNightShift(new PersonDTO(remainPersonDTO,postType),allPersonDTOList);
+				shiftPlanDTO.addDayShift(new PersonDTO(remainPersonDTO,postType),allPersonDTOList);
 				numberOfSetting=numberOfSetting-1;
 				if (numberOfSetting<=0){
 					return true;
@@ -617,7 +646,7 @@ public class SchedulingUtil {
 			//todo 如果没有完成，则根据假期期望优先级先后忽略看是否可以实现
 			if (vacationPersonDTOList!=null){
 				for (Long vacationPersonDTO : vacationPersonDTOList) {
-					shiftPlanDTO.addNightShift(new PersonDTO(vacationPersonDTO,postType),allPersonDTOList);
+					shiftPlanDTO.addDayShift(new PersonDTO(vacationPersonDTO,postType),allPersonDTOList);
 					numberOfSetting=numberOfSetting-1;
 					if (numberOfSetting<=0){
 						return true;
@@ -627,7 +656,7 @@ public class SchedulingUtil {
 			// 如果还不能，从当日排班禁忌表中取人；但是默认是不能的
 //			if (tabooPersonDTOList!=null){
 //				for (Long tabooPersonDTO : tabooPersonDTOList) {
-//					shiftPlanDTO.addNightShift(new PersonDTO(tabooPersonDTO,postType),allPersonDTOList);
+//					shiftPlanDTO.addDayShift(new PersonDTO(tabooPersonDTO,postType),allPersonDTOList);
 //					numberOfSetting=numberOfSetting-1;
 //					if (numberOfSetting<=0){
 //						return true;

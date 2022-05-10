@@ -77,10 +77,11 @@ public class SchedulingReferenceServiceImpl extends FoundationServiceImpl<Schedu
 					//新建时需要对部门以及审批状态进行初始化
 					schedulingReferenceVO.setDepartmentId(ServiceImplUtil.getNurseInfoFromUser().getDepartment());
 					schedulingReferenceVO.setState(0);
+				}else {
+					//如果不为空，那么就应该避免一些字段例如审核状态被改变
+					SchedulingReference origin=this.getById(schedulingReferenceVO.getId());
+					schedulingReferenceVO.setState(origin.getState());
 				}
-				//如果不为空，那么就应该避免一些字段例如审核状态被改变
-				SchedulingReference origin=this.getById(schedulingReferenceVO.getId());
-				schedulingReferenceVO.setState(origin.getState());
 				return this.saveOrUpdate(schedulingReferenceVO);
 			}
 			return false;
@@ -244,33 +245,34 @@ public class SchedulingReferenceServiceImpl extends FoundationServiceImpl<Schedu
 		boolean flag=SchedulingUtil.scheduling(nurseDTOList, expectationDTOList,
 			scheduleTable,shiftPlanDTO);
 
+
+		//保存
+		StaffTimeServiceImpl staffTimeService=SpringUtil.getContext().getBean(StaffTimeServiceImpl.class);
+
+		for (Date date = scheduleTable.getCloneStartDate(); date.compareTo(scheduleTable.getCloneEndDate())<=0; date=SchedulingUtil.nextDay(date)){
+			ShiftPlanDTO shiftPlan=scheduleTable.getShiftPlanDTOList().get(date);
+			Date finalDate = date;
+			for (PersonDTO personDTO:shiftPlan.getDayShifts()){
+				StaffTime staffTime=new StaffTime();
+				staffTime.setReferenceSid(origin.getId());
+				staffTime.setNurseSid(personDTO.getNurseId());
+				staffTime.setCategory(Constant.SHIFT_TYPE_OF_DAY);
+				staffTime.setPostType(personDTO.getPostType());
+				staffTime.setShiftDate(finalDate);
+				staffTimeService.saveOrUpdate(staffTime);
+			}
+			for (PersonDTO personDTO:shiftPlan.getNightShifts()){
+				StaffTime staffTime=new StaffTime();
+				staffTime.setReferenceSid(origin.getId());
+				staffTime.setCategory(Constant.SHIFT_TYPE_OF_NIGHT);
+				staffTime.setNurseSid(personDTO.getNurseId());
+				staffTime.setPostType(personDTO.getPostType());
+				staffTime.setShiftDate(finalDate);
+				staffTimeService.saveOrUpdate(staffTime);
+			}
+		}
 		if (flag){
 			//排班成功
-			//保存
-			StaffTimeServiceImpl staffTimeService=SpringUtil.getContext().getBean(StaffTimeServiceImpl.class);
-
-			for (Date date = scheduleTable.getCloneStartDate(); date.compareTo(scheduleTable.getCloneEndDate())<=0; date=SchedulingUtil.nextDay(date)){
-				ShiftPlanDTO shiftPlan=scheduleTable.getShiftPlanDTOList().get(date);
-				Date finalDate = date;
-				for (PersonDTO personDTO:shiftPlan.getDayShifts()){
-					StaffTime staffTime=new StaffTime();
-					staffTime.setReferenceSid(origin.getId());
-					staffTime.setNurseSid(personDTO.getNurseId());
-					staffTime.setCategory(Constant.SHIFT_TYPE_OF_DAY);
-					staffTime.setPostType(personDTO.getPostType());
-					staffTime.setShiftDate(finalDate);
-					staffTimeService.saveOrUpdate(staffTime);
-				}
-				for (PersonDTO personDTO:shiftPlan.getNightShifts()){
-					StaffTime staffTime=new StaffTime();
-					staffTime.setReferenceSid(origin.getId());
-					staffTime.setCategory(Constant.SHIFT_TYPE_OF_NIGHT);
-					staffTime.setNurseSid(personDTO.getNurseId());
-					staffTime.setPostType(personDTO.getPostType());
-					staffTime.setShiftDate(finalDate);
-					staffTimeService.saveOrUpdate(staffTime);
-				}
-			}
 			//对排班配置标记为成功
 			origin.setState(Constant.SCHEDULING_REFERENCE_CONFIG_SCHEDULING_SUCCESS);
 			flag=flag&&this.saveOrUpdate(origin);
