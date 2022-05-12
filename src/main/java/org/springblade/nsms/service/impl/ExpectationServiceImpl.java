@@ -85,8 +85,8 @@ public class ExpectationServiceImpl extends FoundationServiceImpl<ExpectationMap
 				throw new Exception("提交的数据异常");
 			}
 			//判断期望的时间区间是否在排班配置的时间区间内
-			Date startDate=DateFormat.getDateInstance().parse(dateList.get(0));
-			Date endDate=DateFormat.getDateInstance().parse(dateList.get(1));
+			Date startDate=DateUtil.parse(dateList.get(0), DateUtil.PATTERN_DATE);
+			Date endDate=DateUtil.parse(dateList.get(1), DateUtil.PATTERN_DATE);
 			expectation.setStartDate(startDate);
 			expectation.setEndDate(endDate);
 			expectation.setNurseSid(ServiceImplUtil.getNurseIdFromUser());
