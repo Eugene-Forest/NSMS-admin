@@ -172,15 +172,14 @@ public class LeaveRecordController extends BladeController {
 	@PostMapping("/remove")
 	@ApiOperationSupport(order = 7)
 	@ApiOperation(value = "逻辑删除", notes = "传入ids")
-	public R remove(@ApiParam(value = "主键集合", required = true) @RequestParam String ids) {
-		List<Long> idList=Func.toLongList(ids);
-		idList.forEach(x->{
-			LeaveRecord origin=leaveRecordService.getById(x);
+	public R remove(@Valid @RequestBody List<LeaveRecord> objectList) {
+		objectList.forEach(x->{
+			LeaveRecord origin=leaveRecordService.getById(x.getId());
 			if (!origin.getApprovalStatus().equals(Constant.APPROVAL_STATUS_PENDING)){
 				throw new RuntimeException("请刷新页面并请确认被选中的申请的审核状态！");
 			}
 		});
-		return R.status(leaveRecordService.deleteLogic(Func.toLongList(ids)));
+		return R.status(leaveRecordService.deleteLogic(objectList));
 	}
 
 	/**

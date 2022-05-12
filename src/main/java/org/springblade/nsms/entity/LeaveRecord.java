@@ -16,15 +16,19 @@
 package org.springblade.nsms.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import org.springblade.core.mp.base.BaseEntity;
 import java.time.LocalDate;
+import java.util.Date;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springblade.rewrite.FoundationEntity;
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * 请假记录表实体类
@@ -49,7 +53,13 @@ public class LeaveRecord extends FoundationEntity {
      * 请假日期
      */
     @ApiModelProperty(value = "请假日期")
-    private LocalDate leaveDate;
+	@DateTimeFormat(
+		pattern = "yyyy-MM-dd"
+	)
+	@JsonFormat(
+		pattern = "yyyy-MM-dd"
+	)
+    private Date leaveDate;
     /**
      * 请假班次
      */

@@ -30,19 +30,18 @@ public class FoundationServiceImpl<M extends BaseMapper<T>, T extends Foundation
 	@Transactional(
 		rollbackFor = {Exception.class}
 	)
-	public boolean deleteLogic(@NotEmpty List<Long> ids) {
+	public boolean deleteLogic(@NotEmpty List<T> ids) {
 		//通过Secure工具类提供的方法，获取于请求中的用户信息
 		BladeUser user = SecureUtil.getUser();
 		List<T> list = new ArrayList();
-		ids.forEach((id) -> {
+		ids.forEach((x) -> {
 			T entity = BeanUtil.newInstance(this.currentModelClass());
 			if (user != null) {
 				entity.setUpdateUser(user.getUserId());
 			}
-
 			entity.setUpdateTime(DateUtil.now());
-			entity.setStatus(entity.getStatus()+1);
-			entity.setId(id);
+			entity.setId(x.getId());
+			entity.setStatus(x.getStatus());
 			list.add(entity);
 		});
 		return super.updateBatchById(list) && super.removeByIds(ids);

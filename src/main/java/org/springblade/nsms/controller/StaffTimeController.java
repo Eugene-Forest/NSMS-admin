@@ -125,8 +125,8 @@ public class StaffTimeController extends BladeController {
 	@PostMapping("/remove")
 	@ApiOperationSupport(order = 7)
 	@ApiOperation(value = "逻辑删除", notes = "传入ids")
-	public R remove(@ApiParam(value = "主键集合", required = true) @RequestParam String ids) {
-		return R.status(staffTimeService.deleteLogic(Func.toLongList(ids)));
+	public R remove(@Valid @RequestBody List<StaffTime> objectList) {
+		return R.status(staffTimeService.deleteLogic(objectList));
 	}
 
 

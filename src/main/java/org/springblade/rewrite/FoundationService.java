@@ -14,7 +14,7 @@ import java.util.List;
  * @date 2022/3/15
  **/
 public interface FoundationService<T> extends IService<T> {
-	boolean deleteLogic(@NotEmpty List<Long> ids);
+	boolean deleteLogic(@NotEmpty List<T> ids);
 
 	boolean changeStatus(@NotEmpty List<Long> ids, Integer status);
 

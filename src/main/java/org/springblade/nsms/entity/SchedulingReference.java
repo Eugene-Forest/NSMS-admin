@@ -92,10 +92,10 @@ public class SchedulingReference extends FoundationEntity {
      */
     @ApiModelProperty(value = "开始日期")
 	@DateTimeFormat(
-		pattern = "yyyy-MM-dd HH:mm:ss"
+		pattern = "yyyy-MM-dd"
 	)
 	@JsonFormat(
-		pattern = "yyyy-MM-dd HH:mm:ss"
+		pattern = "yyyy-MM-dd"
 	)
     private Date startDate;
     /**
@@ -103,10 +103,10 @@ public class SchedulingReference extends FoundationEntity {
      */
     @ApiModelProperty(value = "结束日期")
 	@DateTimeFormat(
-		pattern = "yyyy-MM-dd HH:mm:ss"
+		pattern = "yyyy-MM-dd"
 	)
 	@JsonFormat(
-		pattern = "yyyy-MM-dd HH:mm:ss"
+		pattern = "yyyy-MM-dd"
 	)
     private Date endDate;
     /**

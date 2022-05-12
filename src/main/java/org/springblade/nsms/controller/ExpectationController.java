@@ -38,6 +38,7 @@ import org.springblade.nsms.wrapper.ExpectationWrapper;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * 护士助手的排班期望表 控制器
@@ -147,8 +148,8 @@ public class ExpectationController extends BladeController {
 	@PostMapping("/remove")
 	@ApiOperationSupport(order = 7)
 	@ApiOperation(value = "逻辑删除", notes = "传入ids")
-	public R remove(@ApiParam(value = "主键集合", required = true) @RequestParam String ids) {
-		return R.status(expectationService.deleteExpectationVO(Func.toLongList(ids)));
+	public R remove(@Valid @RequestBody List<Expectation> objectList) {
+		return R.status(expectationService.deleteExpectationVO(objectList));
 	}
 
 

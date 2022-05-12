@@ -50,7 +50,7 @@ public interface IExpectationService extends FoundationService<Expectation> {
 	boolean saveOrUpdateExpectationVO( ExpectationVO expectation);
 
 
-	boolean deleteExpectationVO(List<Long> ids);
+	boolean deleteExpectationVO(List<Expectation> expectationList);
 
 	/**
 	 * 对数据进行了简单处理的分页查询；（数据权限功能待添加）

@@ -36,6 +36,8 @@ import org.springblade.nsms.wrapper.ClockInWrapper;
 import org.springblade.nsms.service.IClockInService;
 import org.springblade.core.boot.ctrl.BladeController;
 
+import java.util.List;
+
 /**
  * 打卡记录表 控制器
  *
@@ -114,16 +116,16 @@ public class ClockInController extends BladeController {
 		return R.status(clockInService.saveOrUpdate(clockIn));
 	}
 
-	
+
 	/**
 	 * 删除 打卡记录表
 	 */
 	@PostMapping("/remove")
 	@ApiOperationSupport(order = 7)
 	@ApiOperation(value = "逻辑删除", notes = "传入ids")
-	public R remove(@ApiParam(value = "主键集合", required = true) @RequestParam String ids) {
-		return R.status(clockInService.deleteLogic(Func.toLongList(ids)));
+	public R remove(@Valid @RequestBody List<ClockIn> objectList) {
+		return R.status(clockInService.deleteLogic(objectList));
 	}
 
-	
+
 }

@@ -36,6 +36,8 @@ import org.springblade.nsms.wrapper.SchedulingReferenceWrapper;
 import org.springblade.nsms.service.ISchedulingReferenceService;
 import org.springblade.core.boot.ctrl.BladeController;
 
+import java.util.List;
+
 /**
  * 排班依据表 控制器
  *
@@ -121,8 +123,8 @@ public class SchedulingReferenceController extends BladeController {
 	@PostMapping("/remove")
 	@ApiOperationSupport(order = 7)
 	@ApiOperation(value = "逻辑删除", notes = "传入ids")
-	public R remove(@ApiParam(value = "主键集合", required = true) @RequestParam String ids) {
-		return R.status(schedulingReferenceService.deleteLogic(Func.toLongList(ids)));
+	public R remove(@Valid @RequestBody List<SchedulingReference> objectList) {
+		return R.status(schedulingReferenceService.deleteLogic(objectList));
 	}
 
 	@GetMapping("/select")

@@ -86,6 +86,12 @@ public class ExpectationServiceImpl extends FoundationServiceImpl<ExpectationMap
 			expectation.setEndDate(DateFormat.getDateInstance().parse(dateList.get(1)));
 			expectation.setNurseSid(ServiceImplUtil.getNurseIdFromUser());
 			expectation.setActualState(Constant.ACTUAL_STATE_WAIT);
+
+			//todo 判断是添加还是编辑，并对其时间区间以及期望合理性进行校验
+			//天数期望每种类型只能存在一种，并且所有天数期望之和小于等于排班时间天数
+
+			//如果日期期望需要判断天数期望以及排班区间的天数限制
+
 			boolean state=this.saveOrUpdate(expectation);
 			return state;
 		}catch (Exception e){
@@ -94,7 +100,8 @@ public class ExpectationServiceImpl extends FoundationServiceImpl<ExpectationMap
 	}
 
 	@Override
-	public boolean deleteExpectationVO(List<Long> ids) {
+	public boolean deleteExpectationVO(List<Expectation> expectationList) {
+		List<Long> ids=expectationList.stream().map(FoundationEntity::getId).collect(Collectors.toList());
 		//删除期望之前需要确认其不会影响
 		Expectation origin;
 		if (ids!=null&&ids.get(0)!=null){
@@ -129,7 +136,7 @@ public class ExpectationServiceImpl extends FoundationServiceImpl<ExpectationMap
 		}
 		boolean flag=true;
 		// 删除
-		flag=flag&&deleteLogic(ids);
+		flag=flag&&deleteLogic(expectationList);
 		//删除选中的部分，将剩余的部分由小到大重新编号
 		originList=originList.stream().filter(x->!(ids.contains(x.getId()))).collect(Collectors.toList());
 		//升序排序

@@ -196,15 +196,14 @@ public class ShiftRecordController extends BladeController {
 	@PostMapping("/remove")
 	@ApiOperationSupport(order = 7)
 	@ApiOperation(value = "逻辑删除", notes = "传入ids")
-	public R remove(@ApiParam(value = "主键集合", required = true) @RequestParam String ids) {
-		List<Long> idList=Func.toLongList(ids);
-		idList.forEach(x->{
-			ShiftRecord origin=shiftRecordService.getById(x);
+	public R remove(@Valid @RequestBody List<ShiftRecord> objectList) {
+		objectList.forEach(x->{
+			ShiftRecord origin=shiftRecordService.getById(x.getId());
 			if (!origin.getApplicationStatus().equals(Constant.EXCHANGE_APPROVAL_STATUS_PENDING)){
 				throw new RuntimeException("请刷新页面并请确认被选中的申请的审核状态！");
 			}
 		});
-		return R.status(shiftRecordService.deleteLogic(Func.toLongList(ids)));
+		return R.status(shiftRecordService.deleteLogic(objectList));
 	}
 
 	/**
