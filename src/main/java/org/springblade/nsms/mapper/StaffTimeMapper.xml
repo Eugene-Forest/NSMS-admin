@@ -10,6 +10,7 @@
         <result column="create_time" property="createTime"/>
         <result column="update_user" property="updateUser"/>
         <result column="update_time" property="updateTime"/>
+        <result column="tenant_id" property="tenantId"/>
         <result column="is_deleted" property="isDeleted"/>
         <result column="status" property="status"/>
         <result column="description" property="description"/>
@@ -24,6 +25,10 @@
 
     <select id="selectStaffTimePage" resultMap="staffTimeResultMap">
         select * from com_staff_time where is_deleted = 0
+        and tenant_id=#{nurseInfo.tenantId}
+        and create_dept=#{nurseInfo.department}
+        and nurse_sid=#{nurseInfo.id}
+        and shift_date > FORMAT(Now(),'YYYY-MM-DD')
     </select>
 
     <update id="deleteSchedulingResultByTimeInterval">

@@ -45,8 +45,9 @@ import java.util.*;
 public class StaffTimeServiceImpl extends FoundationServiceImpl<StaffTimeMapper, StaffTime> implements IStaffTimeService {
 
 	@Override
-	public IPage<StaffTimeVO> selectStaffTimePage(IPage<StaffTimeVO> page, StaffTimeVO staffTime) {
-		return page.setRecords(baseMapper.selectStaffTimePage(page, staffTime));
+	public IPage<StaffTime> selectStaffTimePage(IPage<StaffTime> page) {
+		NurseInfo nurseInfo=ServiceImplUtil.getNurseInfoFromUser();
+		return page.setRecords(baseMapper.selectStaffTimePage(page, nurseInfo));
 	}
 
 	@Override

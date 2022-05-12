@@ -31,13 +31,10 @@ import java.util.List;
 public interface IStaffTimeService extends FoundationService<StaffTime> {
 
 	/**
-	 * 自定义分页
-	 *
-	 * @param page
-	 * @param staffTime
+	 * 获取本人本日后的所有排班记录的分页
 	 * @return
 	 */
-	IPage<StaffTimeVO> selectStaffTimePage(IPage<StaffTimeVO> page, StaffTimeVO staffTime);
+	IPage<StaffTime> selectStaffTimePage(IPage<StaffTime> page);
 
 	List<StaffTimeVO> calenderDefault(String startDate,String endDate);
 

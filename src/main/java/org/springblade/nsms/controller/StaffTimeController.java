@@ -27,6 +27,7 @@ import org.springblade.core.mp.support.Query;
 import org.springblade.core.tool.api.R;
 import org.springblade.core.tool.utils.DateUtil;
 import org.springblade.core.tool.utils.Func;
+import org.springblade.nsms.entity.NurseInfo;
 import org.springblade.nsms.entity.StaffTime;
 import org.springblade.nsms.service.IStaffTimeService;
 import org.springblade.nsms.tools.ServiceImplUtil;
@@ -83,9 +84,9 @@ public class StaffTimeController extends BladeController {
 	@GetMapping("/page")
 	@ApiOperationSupport(order = 3)
 	@ApiOperation(value = "分页", notes = "传入staffTime")
-	public R<IPage<StaffTimeVO>> page(StaffTimeVO staffTime, Query query) {
-		IPage<StaffTimeVO> pages = staffTimeService.selectStaffTimePage(Condition.getPage(query), staffTime);
-		return R.data(pages);
+	public R<IPage<StaffTimeVO>> page(StaffTime staffTime, Query query) {
+		IPage<StaffTime> pages = staffTimeService.selectStaffTimePage(Condition.getPage(query));
+		return R.data(StaffTimeWrapper.build().pageVO(pages));
 	}
 
 	/**

@@ -18,6 +18,7 @@ package org.springblade.nsms.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.ibatis.annotations.Param;
+import org.springblade.nsms.entity.NurseInfo;
 import org.springblade.nsms.entity.StaffTime;
 import org.springblade.nsms.vo.StaffTimeVO;
 
@@ -34,12 +35,9 @@ public interface StaffTimeMapper extends BaseMapper<StaffTime> {
 
 	/**
 	 * 自定义分页
-	 *
-	 * @param page
-	 * @param staffTime
 	 * @return
 	 */
-	List<StaffTimeVO> selectStaffTimePage(IPage page, StaffTimeVO staffTime);
+	List<StaffTime> selectStaffTimePage(IPage page, NurseInfo nurseInfo);
 
 	/**
 	 * 逻辑删除时间区间内的排班结果
