@@ -35,7 +35,6 @@ import org.springblade.nsms.wrapper.SchedulingReferenceWrapper;
 import org.springblade.rewrite.FoundationServiceImpl;
 import org.springframework.stereotype.Service;
 
-import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -72,22 +71,91 @@ public class SchedulingReferenceServiceImpl extends FoundationServiceImpl<Schedu
 				if (schedulingReferenceVO.getEndDate().before(schedulingReferenceVO.getStartDate())){
 					throw new RuntimeException("日期区间错误！");
 				}
+
+				NurseInfo nurseInfo=ServiceImplUtil.getNurseInfoFromUser();
+				List<SchedulingReference> originList=this.list(
+					Condition.getQueryWrapper(new SchedulingReference())
+						.eq("tenant_id", nurseInfo.getTenantId())
+						.eq("create_dept", nurseInfo.getDepartment())
+						.eq("is_deleted", 0)
+				);
 				//针对一些字段进行初始化
 				if (schedulingReferenceVO.getId()==null){
 					//新建时需要对部门以及审批状态进行初始化
 					schedulingReferenceVO.setDepartmentId(ServiceImplUtil.getNurseInfoFromUser().getDepartment());
 					schedulingReferenceVO.setState(0);
+					//新建，那么需要验证所有已经添加的排班配置并验证其时间范围是否符合,不需要对现有的源排班配置列表进行操作
 				}else {
 					//如果不为空，那么就应该避免一些字段例如审核状态被改变
 					SchedulingReference origin=this.getById(schedulingReferenceVO.getId());
 					schedulingReferenceVO.setState(origin.getState());
+					//编辑，那么需要验证所有已经添加的（除了自己的）排班配置并验证其时间范围是否符合；需要将现有源排班配置列表中排除掉自己
+					originList=originList.stream().filter(x->!x.getId().equals(origin.getId())).collect(Collectors.toList());
 				}
-				return this.saveOrUpdate(schedulingReferenceVO);
+				//判断新建或者修改后的时间是否符合规范
+				if (checkDateRange(originList, schedulingReferenceVO)){
+					return this.saveOrUpdate(schedulingReferenceVO);
+				}else {
+					throw new RuntimeException("请确保当前的排班配置的时间区间不与现存的排班配置的时间冲突！");
+				}
 			}
 			return false;
 //		}catch (Exception e){
 //			throw new RuntimeException("请确保提交的数据符合规范。");
 //		}
+	}
+
+	/**
+	 * 判断新建或者修改后的排班配置的时间区间是否符合规范：不与现存的所有排班配置的时间区间由交集
+	 * @param referenceList
+	 * @param reference
+	 * @return 如果有交集，说明不符合规范，那么返回 false ；否则返回 true
+	 */
+	private boolean checkDateRange(List<SchedulingReference> referenceList,SchedulingReference reference){
+		boolean flag=true;
+		for (SchedulingReference schedulingReference:referenceList){
+			//对时间已经格式化，需要防止日期中的天数之下的数值影响判断
+			//首先判断需要添加的排班的时间的起始时间是否在已存在的排班配置的时间区间中
+			if (compareDateIsBetweenOrNot(
+				schedulingReference.getStartDate(),
+				schedulingReference.getEndDate(),
+				reference.getStartDate())){
+				flag=false;
+				break;
+			}
+			if (compareDateIsBetweenOrNot(
+				schedulingReference.getStartDate(),
+				schedulingReference.getEndDate(),
+				reference.getEndDate())){
+				flag=false;
+				break;
+			}
+			//然后判断添加的排班的时间是否包含整个已存在的排班配置的时间区间
+			if(reference.getStartDate().before(schedulingReference.getStartDate())
+			&&reference.getEndDate().after(schedulingReference.getEndDate())){
+				//如果包含则说明不符合
+				flag=false;
+				break;
+			}
+			//如果都不满足，那么说明添加的排班的时间独立于此排班配置的时间区间
+		}
+		return flag;
+	}
+
+	/**
+	 * 判断 target 日期是否在 start 日期和 end 日期之间(包括起止时间本身)
+	 * @param start
+	 * @param end
+	 * @param target
+	 * @return 如果在，则返回 true ；否则返回 false
+	 */
+	private boolean compareDateIsBetweenOrNot(
+		Date start,Date end,Date target
+	){
+		if (target.after(end)|| target.before(start)){
+			return false;
+		}
+		return true;
 	}
 
 	/**
