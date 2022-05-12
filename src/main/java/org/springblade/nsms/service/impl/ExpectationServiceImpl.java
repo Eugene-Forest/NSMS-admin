@@ -15,12 +15,16 @@
  */
 package org.springblade.nsms.service.impl;
 
+import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleCreateTableStatement;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.microsoft.schemas.office.visio.x2012.main.FaceNamesType;
 import org.springblade.common.tool.SpringBeanUtil;
 import org.springblade.core.mp.support.Condition;
+import org.springblade.core.tool.utils.DateUtil;
 import org.springblade.core.tool.utils.Func;
 import org.springblade.nsms.entity.Expectation;
+import org.springblade.nsms.entity.NurseInfo;
 import org.springblade.nsms.entity.SchedulingReference;
 import org.springblade.nsms.mapper.ExpectationMapper;
 import org.springblade.nsms.service.IExpectationService;
@@ -33,9 +37,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DateFormat;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
@@ -82,21 +84,178 @@ public class ExpectationServiceImpl extends FoundationServiceImpl<ExpectationMap
 			if (dateList==null||dateList.size()!=2){
 				throw new Exception("提交的数据异常");
 			}
-			expectation.setStartDate(DateFormat.getDateInstance().parse(dateList.get(0)));
-			expectation.setEndDate(DateFormat.getDateInstance().parse(dateList.get(1)));
+			//判断期望的时间区间是否在排班配置的时间区间内
+			Date startDate=DateFormat.getDateInstance().parse(dateList.get(0));
+			Date endDate=DateFormat.getDateInstance().parse(dateList.get(1));
+			expectation.setStartDate(startDate);
+			expectation.setEndDate(endDate);
 			expectation.setNurseSid(ServiceImplUtil.getNurseIdFromUser());
 			expectation.setActualState(Constant.ACTUAL_STATE_WAIT);
-
+			if (!ServiceImplUtil.compareDateIsBetweenOrNot(
+				schedulingReference.getStartDate(),
+				schedulingReference.getEndDate(),
+				startDate)){
+				throw new Exception("期望的时间区间不在排班配置时间范围内！");
+			}
+			if (!ServiceImplUtil.compareDateIsBetweenOrNot(
+				schedulingReference.getStartDate(),
+				schedulingReference.getEndDate(),
+				endDate)){
+				throw new Exception("期望的时间区间不在排班配置时间范围内！");
+			}
+			//获取本人在此排班配置中添加了的记录
+			NurseInfo nurseInfo=ServiceImplUtil.getNurseInfoFromUser();
+			List<Expectation> originList=this.list(
+				Condition.getQueryWrapper(new Expectation())
+				.eq("tenant_id", nurseInfo.getTenantId())
+					.eq("create_dept", nurseInfo.getDepartment())
+					.eq("create_user", nurseInfo.getUserId())
+					.eq("reference_sid", schedulingReference.getId())
+					.eq("is_deleted", 0));
 			//todo 判断是添加还是编辑，并对其时间区间以及期望合理性进行校验
 			//天数期望每种类型只能存在一种，并且所有天数期望之和小于等于排班时间天数
-
-			//如果日期期望需要判断天数期望以及排班区间的天数限制
-
-			boolean state=this.saveOrUpdate(expectation);
-			return state;
+			if (checkExpectation(originList, expectation, schedulingReference)){
+				// 满足以上判断说明可以添加或修改
+				return this.saveOrUpdate(expectation);
+			}else {
+				return false;
+			}
 		}catch (Exception e){
 			throw new RuntimeException(e.getMessage());
 		}
+	}
+
+
+	/**
+	 * 期望的判断
+	 * @param expectationList
+	 * @param target
+	 * @return
+	 */
+	private boolean checkExpectation(
+		final List<Expectation> expectationList,Expectation target,SchedulingReference reference
+	){
+		//获取除了自身之外的期望
+		List<Expectation> expectations=expectationList.stream().filter(
+			x->!x.getId().equals(target.getId())
+		).collect(Collectors.toList());
+		//如果期源期望数组为空，那么就不用校验
+		if (expectations.size()==0){
+			return true;
+		}
+		//排班配置区间天数
+		int schedulingDayNumber= (int) (DateUtil.between(reference.getStartDate(),reference.getEndDate()).toDays()+1);
+		//日班日期天数期望天数之和
+		int dayShiftNumber=getDayNumberFromExpectations(
+			expectationList.stream().filter(x->x.getExpectationType().equals(Constant.EXPECTATION_TYPE_DAY_SHIFT)).collect(Collectors.toList()));
+		//日班日期天数期望天数之和
+		int nightShiftNumber=getDayNumberFromExpectations(
+			expectationList.stream().filter(x->x.getExpectationType().equals(Constant.EXPECTATION_TYPE_NIGHT_SHIFT)).collect(Collectors.toList()));
+		//假期日期天数期望天数之和
+		int vacationNumber=getDayNumberFromExpectations(
+			expectationList.stream().filter(x->x.getExpectationType().equals(Constant.EXPECTATION_TYPE_VACATION)).collect(Collectors.toList()));
+		//日班天数期望天数
+		int dayNumber=0;
+		Optional<Expectation> dayNumberExpectationOptional=expectationList.stream().filter(x->x.getExpectationType().equals(Constant.EXPECTATION_TYPE_DAY_NUMBER)).findFirst();
+		if (dayNumberExpectationOptional.isPresent()){
+			dayNumber=dayNumberExpectationOptional.get().getDayNumber();
+		}
+		//夜班天数期望
+		int nightNumber=0;
+		Optional<Expectation> nightNumberExpectationOptional=expectationList.stream().filter(x->x.getExpectationType().equals(Constant.EXPECTATION_TYPE_NIGHT_NUMBER)).findFirst();
+		if (nightNumberExpectationOptional.isPresent()){
+			nightNumber=nightNumberExpectationOptional.get().getDayNumber();
+		}
+
+		int targetNumber=0;
+		if (target.getExpectationType().equals(Constant.EXPECTATION_TYPE_NIGHT_NUMBER)){
+			//需要判断在源期望数组中还存在同类型的期望（针对新建时）
+			for (Expectation expectation:expectations){
+				if (expectation.getExpectationType().equals(target.getExpectationType())){
+					throw new RuntimeException("已经存在夜班天数期望！");
+				}
+			}
+			targetNumber=target.getDayNumber();
+			//日班、夜班天数期望天数之和加上假期期望天数之和要小于等于排班配置的时间范
+			int remainNumber=schedulingDayNumber-vacationNumber-dayNumber;
+			if (targetNumber>remainNumber){
+				throw new RuntimeException("剩余可被期望为夜班的天数为："+remainNumber+"天");
+			}
+			//夜班日期期望总天数小于等于夜班天数期望
+			if (targetNumber<nightShiftNumber){
+				throw new RuntimeException("已经存在夜班日期期望，所以夜班天数期望需要满足的最小值为："+nightShiftNumber);
+			}
+			return true;
+		}else if (target.getExpectationType().equals(Constant.EXPECTATION_TYPE_DAY_NUMBER)){
+			for (Expectation expectation:expectations){
+				if (expectation.getExpectationType().equals(target.getExpectationType())){
+					throw new RuntimeException("已经存在日班天数期望！");
+				}
+			}
+			targetNumber=target.getDayNumber();
+			//日班、夜班天数期望天数之和加上假期期望天数之和要小于等于排班配置的时间范
+			int remainNumber=schedulingDayNumber-vacationNumber-nightNumber;
+			if (targetNumber>remainNumber){
+				throw new RuntimeException("剩余可被期望为日班的天数为："+remainNumber+"天");
+			}
+			//夜班日期期望总天数小于等于夜班天数期望
+			if (targetNumber<dayShiftNumber){
+				throw new RuntimeException("已经存在日班日期期望，所以日班天数期望需要满足的最小值为："+nightShiftNumber);
+			}
+			return true;
+		}else{
+			targetNumber=getDayNumberFromExpectation(target);
+			//再进行日期重合判断前，先判断天数是否符合
+			//日期天数之和小于等于总天数
+			int remainNumber=schedulingDayNumber-(dayShiftNumber+nightShiftNumber+vacationNumber);
+			if (targetNumber>remainNumber){
+				throw new RuntimeException("剩余可被添加期望的天数为："+remainNumber);
+			}
+			if (target.getExpectationType().equals(Constant.EXPECTATION_TYPE_DAY_SHIFT)){
+				//日期期望天数小于对应班次的天数期望的天数
+				if (targetNumber>(dayNumber-dayShiftNumber)&&dayNumber!=0){
+					throw new RuntimeException("已经存在日班天数期望！剩余可被指定具体日期的天数为"+(dayNumber-dayShiftNumber));
+				}
+			}
+			if (target.getExpectationType().equals(Constant.EXPECTATION_TYPE_NIGHT_SHIFT)){
+				//日期期望天数小于对应班次的天数期望的天数
+				if (targetNumber>(nightNumber-nightShiftNumber)&&nightNumber!=0){
+					throw new RuntimeException("已经存在夜班天数期望！剩余可被指定具体日期的天数为"+(nightNumber-nightShiftNumber));
+				}
+			}
+			//日期期望判断是否由日期重合
+			List<Expectation> dateExpectations=expectations.stream().filter(
+				x->x.getExpectationType().equals(Constant.EXPECTATION_TYPE_DAY_SHIFT)
+				||x.getExpectationType().equals(Constant.EXPECTATION_TYPE_NIGHT_SHIFT)
+				||x.getExpectationType().equals(Constant.EXPECTATION_TYPE_VACATION)
+			).collect(Collectors.toList());
+			//并判断与期望时间是否冲突
+			for (Expectation expectation:dateExpectations){
+				boolean flag=ServiceImplUtil.compareDateIsBetweenOrNot(
+					expectation.getStartDate(),expectation.getEndDate(),target.getStartDate());
+				if (flag){
+					throw new RuntimeException("添加的期望的日期与现存的日期期望时间冲突");
+				}
+				flag=ServiceImplUtil.compareDateIsBetweenOrNot(
+					expectation.getStartDate(),expectation.getEndDate(),target.getEndDate());
+				if (flag){
+					throw new RuntimeException("添加的期望的日期与现存的日期期望时间冲突");
+				}
+			}
+			return true;
+		}
+	}
+
+	public int getDayNumberFromExpectations(List<Expectation> targets){
+		int dayNumber=0;
+		for (Expectation expectation:targets){
+			dayNumber=dayNumber+getDayNumberFromExpectation(expectation);
+		}
+		return dayNumber;
+	}
+
+	public int getDayNumberFromExpectation(Expectation target){
+		return (int)(DateUtil.between(target.getStartDate(),target.getEndDate()).toDays()+1);
 	}
 
 	@Override

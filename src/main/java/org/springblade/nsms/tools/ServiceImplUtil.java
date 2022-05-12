@@ -22,6 +22,23 @@ import java.util.Date;
  **/
 public class ServiceImplUtil {
 
+	/**
+	 * 判断 target 日期是否在 start 日期和 end 日期之间(包括起止时间本身)
+	 * @param start
+	 * @param end
+	 * @param target
+	 * @return 如果在，则返回 true ；否则返回 false
+	 */
+	public static boolean compareDateIsBetweenOrNot(
+		Date start,Date end,Date target
+	){
+		if (target.after(end)|| target.before(start)){
+			return false;
+		}
+		return true;
+	}
+
+
 	public static Integer getUserPostType(){
 		NurseInfo nurseInfo=getNurseInfoFromUser();
 		Post post=SpringBeanUtil.getApplicationContext().getBean(PostServiceImpl.class)
